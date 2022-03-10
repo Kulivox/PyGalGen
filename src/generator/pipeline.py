@@ -10,19 +10,19 @@ class PipelineExecutor:
     def __init__(self, default_arg_parser: ArgumentParser):
         self.args_parser = default_arg_parser
 
-    def execute_pipeline(self, plugins: List[Plugin], input, output):
+    def execute_pipeline(self, plugins: List[Plugin], input_file, output_file):
         # initialize argument parser
         parsed_args = self._parse_args(plugins)
         strategies = list(
-            reduce(add, map(lambda x: x.get_strategies(), plugins)))
+            reduce(add, map(lambda x: x.get_strategies(parsed_args), plugins)))
 
         # strategies are than sorted and can be iteratively applied
         strategies.sort()
 
         for strategy in strategies:
-            output = strategy.apply_strategy(input, output)
+            output_file = strategy.apply_strategy(input_file, output_file)
 
-        return output
+        return output_file
 
     def _parse_args(self, plugins):
         for plugin in plugins:
