@@ -5,9 +5,10 @@ from generator.common.stage_order import StageOrder
 
 
 class Strategy(ABC):
-    def __init__(self, stage: StrategyStage,
+    def __init__(self, args: Any, stage: StrategyStage,
                  stage_order: StageOrder = StageOrder.AFTER_DEFAULT,
                  manual_order: int = 0):
+        self.args = args
         self.stage = stage
         self.stage_order = stage_order
         self.manual_order = manual_order
@@ -17,6 +18,7 @@ class Strategy(ABC):
     def apply_strategy(self, tool_input: Any, xml_output: Any) -> Any:
         pass
 
+    # necessary to correctly sort strategies during execution
     def __lt__(self, other):
         other: Strategy
 

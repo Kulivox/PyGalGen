@@ -2,7 +2,7 @@ from enum import Enum
 
 class StrategyStage(Enum):
     MACROS = 0
-    HEADER = 1
+    HEADER_AND_STRUCTURE = 1
     PARAMS = 2
     OUTPUTS = 3
     COMMAND = 4
