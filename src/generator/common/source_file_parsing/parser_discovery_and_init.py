@@ -1,17 +1,8 @@
 import ast
-from typing import Tuple, Optional, Any, Set, List, TextIO
-from exceptions import ArgParseImportNotFound, ArgParserNotUsed
-import abc
-import astunparse
-
-
-class Discovery(ast.NodeVisitor, abc.ABC):
-    def __init__(self, actions: List[ast.AST]):
-        self.actions = actions
-
-    @abc.abstractmethod
-    def report_findings(self) -> Tuple:
-        pass
+import sys
+from typing import Tuple, Optional, Any, Set, List
+from parsing_exceptions import ArgParseImportNotFound, ArgParserNotUsed
+from parsing_commons import Discovery
 
 
 class ImportDiscovery(Discovery):
@@ -28,13 +19,16 @@ class ImportDiscovery(Discovery):
                 self.actions.append(node)
                 return
 
-            if "utils" in item.name:
-                self.actions.append(node)
-
-            if "trtools" in item.name:
+            # stdlib modules should be also imported during this step
+            if item.name in sys.stdlib_module_names:
                 self.actions.append(node)
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> Any:
+        for name in node.module.split("."):
+            if name in sys.stdlib_module_names and name != "argparse":
+                self.actions.append(node)
+                return
+
         if "argparse" not in node.module:
             return
 
@@ -44,9 +38,13 @@ class ImportDiscovery(Discovery):
                     else "ArgumentParser"
                 self.argument_parser_alias = alias
                 self.actions.append(node)
+                return
+
+        # stdlib modules should be also imported during this step
 
     def report_findings(self) -> Tuple:
-        if self.argparse_module_alias is None and self.argument_parser_alias is None:
+        if self.argparse_module_alias is None and\
+                self.argument_parser_alias is None:
             raise ArgParseImportNotFound
 
         return (self.actions, self.argparse_module_alias,
@@ -161,7 +159,7 @@ class ArgumentCreationDiscovery(Discovery):
             assert isinstance(node.func, ast.Attribute)
             # name of the variable needs to be rewritten,
             # because we want to use only one parser
-            if node.func.value.id != self.main_name and\
+            if node.func.value.id != self.main_name and \
                     node.func.value.id not in self.sections:
                 node.func.value.id = self.main_name
 
@@ -170,11 +168,12 @@ class ArgumentCreationDiscovery(Discovery):
         self.generic_visit(node)
 
     def report_findings(self) -> Tuple:
-        return self.actions, self.main_name
+        return self.actions, self.main_name, self.parser_names, self.sections
 
 
-def get_parser_init_and_actions(source: TextIO) -> Tuple[List[ast.AST], str]:
-    target = ast.parse(source.read())
+def get_parser_init_and_actions(source: str) -> \
+        Tuple[List[ast.AST], str, Set[str], Set[str]]:
+    target = ast.parse(source)
 
     discovery_classes = [ImportDiscovery, ParserDiscovery,
                          GroupDiscovery, ArgumentCreationDiscovery]
@@ -185,14 +184,6 @@ def get_parser_init_and_actions(source: TextIO) -> Tuple[List[ast.AST], str]:
         discovery.visit(target)
         findings = discovery.report_findings()
 
-    actions, main_name = findings
+    actions, main_name, parser_names, sections = findings
 
-    return actions, main_name
-
-
-if __name__ == "__main__":
-    import os
-    cwd = os.getcwd()
-    os.chdir('../../TRTools/trtools/qcSTR/')
-    get_parser_init_and_actions("qcSTR.py")
-    os.chdir(cwd)
+    return actions, main_name, parser_names, sections
