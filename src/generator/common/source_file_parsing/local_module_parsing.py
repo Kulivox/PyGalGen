@@ -17,7 +17,7 @@ class UnknownNamesRemoval(ast.NodeVisitor):
         def _reach_add_argument():
             return (isinstance(parent, ast.Call) and
                     isinstance(parent.func, ast.Attribute) and
-                    parent.func.attr != "add_argument")
+                    parent.func.attr == "add_argument")
 
         def _reach_assignment_as_list_comprehension():
             return (isinstance(parent, ast.Assign) and

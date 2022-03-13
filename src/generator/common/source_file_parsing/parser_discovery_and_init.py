@@ -24,6 +24,9 @@ class ImportDiscovery(Discovery):
                 self.actions.append(node)
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> Any:
+        if node.module is None:
+            return
+
         for name in node.module.split("."):
             if name in sys.stdlib_module_names and name != "argparse":
                 self.actions.append(node)

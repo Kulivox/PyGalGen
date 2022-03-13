@@ -76,8 +76,11 @@ def _insert_into_actions(actions: List[ast.AST], assignments: List[ast.Assign],
         return index
 
     end_of_imports = find_end_of_imports()
-    actions.insert(end_of_imports, *assignments)
-    actions.insert(end_of_imports, *class_defs)
+    if assignments:
+        actions.insert(end_of_imports, *assignments)
+
+    if class_defs:
+        actions.insert(end_of_imports, *class_defs)
 
 
 def initialize_variables_in_module(module_tree: ast.Module,
