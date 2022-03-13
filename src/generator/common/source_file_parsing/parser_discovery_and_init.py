@@ -1,8 +1,8 @@
 import ast
 import sys
 from typing import Tuple, Optional, Any, Set, List
-from parsing_exceptions import ArgParseImportNotFound, ArgParserNotUsed
-from parsing_commons import Discovery
+from .parsing_exceptions import ArgParseImportNotFound, ArgParserNotUsed
+from .parsing_commons import Discovery
 
 
 class ImportDiscovery(Discovery):
@@ -61,6 +61,9 @@ class ParserDiscovery(Discovery):
 
         super(ParserDiscovery, self).__init__(actions)
 
+    # checks whether this assignment creates argument parser,
+    # and removes any arguments from the constructor,
+    # because they should not be needed
     def is_this_argparse(self, node: ast.Assign) -> \
             Tuple[bool, Optional[str]]:
 
@@ -74,6 +77,8 @@ class ParserDiscovery(Discovery):
         if (isinstance(node.value, ast.Call) and
                 isinstance(node.value.func, ast.Name) and
                 node.value.func.id == self.argument_parser_alias):
+            node.value.keywords = []
+            node.value.args = []
             return True, name
 
         # ArgumentParser is created using attribute call on imported module
@@ -81,6 +86,8 @@ class ParserDiscovery(Discovery):
                 isinstance(node.value.func, ast.Attribute) and
                 node.value.func.attr == "ArgumentParser" and
                 node.value.func.value.id == self.argparse_module_alias):
+            node.value.args = []
+            node.value.keywords = []
             return True, name
 
         return False, None
@@ -171,9 +178,8 @@ class ArgumentCreationDiscovery(Discovery):
         return self.actions, self.main_name, self.parser_names, self.sections
 
 
-def get_parser_init_and_actions(source: str) -> \
+def get_parser_init_and_actions(source: ast.Module) -> \
         Tuple[List[ast.AST], str, Set[str], Set[str]]:
-    target = ast.parse(source)
 
     discovery_classes = [ImportDiscovery, ParserDiscovery,
                          GroupDiscovery, ArgumentCreationDiscovery]
@@ -181,7 +187,7 @@ def get_parser_init_and_actions(source: str) -> \
     findings = [],
     for cls in discovery_classes:
         discovery = cls(*findings)
-        discovery.visit(target)
+        discovery.visit(source)
         findings = discovery.report_findings()
 
     actions, main_name, parser_names, sections = findings

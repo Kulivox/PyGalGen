@@ -1,5 +1,5 @@
 import ast
-from parsing_commons import Discovery
+from .parsing_commons import Discovery
 from typing import Tuple, List, Any, Set
 import sys
 import builtins
@@ -82,7 +82,7 @@ def _insert_into_actions(actions: List[ast.AST], assignments: List[ast.Assign],
 
 def initialize_variables_in_module(module_tree: ast.Module,
                                    parser_names: Set[str],
-                                   sections: List[str],
+                                   sections: Set[str],
                                    actions: List[ast.AST]):
     builtin_names = [e for e in builtins.__dict__]
     lib_modules = sys.stdlib_module_names
@@ -111,4 +111,5 @@ def initialize_variables_in_module(module_tree: ast.Module,
 
     unknown_names_discovery = UnknownNamesDiscovery(actions, known_names)
     unknown_names_discovery.visit(module)
-    return actions
+    unknown_names, = unknown_names_discovery.report_findings()
+    return actions, unknown_names
