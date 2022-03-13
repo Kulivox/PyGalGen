@@ -1,7 +1,8 @@
 import ast
-from typing import Tuple, Optional, Any, Set, List
+from typing import Tuple, Optional, Any, Set, List, TextIO
 from exceptions import ArgParseImportNotFound, ArgParserNotUsed
 import abc
+import astunparse
 
 
 class Discovery(ast.NodeVisitor, abc.ABC):
@@ -26,6 +27,12 @@ class ImportDiscovery(Discovery):
                 self.argparse_module_alias = alias
                 self.actions.append(node)
                 return
+
+            if "utils" in item.name:
+                self.actions.append(node)
+
+            if "trtools" in item.name:
+                self.actions.append(node)
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> Any:
         if "argparse" not in node.module:
@@ -152,7 +159,10 @@ class ArgumentCreationDiscovery(Discovery):
     def visit_Call(self, node: ast.Call) -> Any:
         if self.is_call_on_parser_or_group(node):
             assert isinstance(node.func, ast.Attribute)
-            if node.func.value.id != self.main_name:
+            # name of the variable needs to be rewritten,
+            # because we want to use only one parser
+            if node.func.value.id != self.main_name and\
+                    node.func.value.id not in self.sections:
                 node.func.value.id = self.main_name
 
             self.actions.append(ast.Expr(node))
@@ -163,9 +173,8 @@ class ArgumentCreationDiscovery(Discovery):
         return self.actions, self.main_name
 
 
-def obtain_prepared_parser(path):
-    with open(path, "r", encoding="utf-8") as source:
-        target = ast.parse(source.read())
+def get_parser_init_and_actions(source: TextIO) -> Tuple[List[ast.AST], str]:
+    target = ast.parse(source.read())
 
     discovery_classes = [ImportDiscovery, ParserDiscovery,
                          GroupDiscovery, ArgumentCreationDiscovery]
@@ -177,15 +186,13 @@ def obtain_prepared_parser(path):
         findings = discovery.report_findings()
 
     actions, main_name = findings
-    module = ast.Module(body=actions, type_ignores=[])
-    ast.fix_missing_locations(module)
-    variables = {}
 
-    compiled_module = compile(module, filename="<parser>", mode="exec")
-    exec(compiled_module, globals(), variables)
-
-    print(variables[main_name]._actions)
+    return actions, main_name
 
 
 if __name__ == "__main__":
-    obtain_prepared_parser("../../TRTools/trtools/qcSTR/qcSTR.py")
+    import os
+    cwd = os.getcwd()
+    os.chdir('../../TRTools/trtools/qcSTR/')
+    get_parser_init_and_actions("qcSTR.py")
+    os.chdir(cwd)
