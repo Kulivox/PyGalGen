@@ -1,6 +1,6 @@
 import ast
 from typing import Tuple, Optional, Any, Set, List
-import astunparse
+from exceptions import ArgParseImportNotFound, ArgParserNotUsed
 import abc
 
 
@@ -9,31 +9,52 @@ class Discovery(ast.NodeVisitor, abc.ABC):
         self.actions = actions
 
     @abc.abstractmethod
-    def report_findings(self) -> Any:
+    def report_findings(self) -> Tuple:
         pass
+
 
 class ImportDiscovery(Discovery):
     def __init__(self, actions: List[ast.AST]):
         super(ImportDiscovery, self).__init__(actions)
-        self.argparse_alias: Optional[str] = None
+        self.argparse_module_alias: Optional[str] = None
         self.argument_parser_alias: Optional[str] = None
 
     def visit_Import(self, node: ast.Import) -> Any:
-        pass
+        for item in node.names:
+            if item.name == "argparse":
+                alias = item.asname if item.asname is not None else "argparse"
+                self.argparse_module_alias = alias
+                self.actions.append(node)
+                return
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> Any:
-        pass
+        if "argparse" not in node.module:
+            return
 
-    def report_findings(self) -> Any:
-        if self.argparse_alias is None and self.argument_parser_alias is None:
-            raise NotF
+        for item in node.names:
+            if item.name == "ArgumentParser":
+                alias = item.asname if item.asname is not None \
+                    else "ArgumentParser"
+                self.argument_parser_alias = alias
+                self.actions.append(node)
+
+    def report_findings(self) -> Tuple:
+        if self.argparse_module_alias is None and self.argument_parser_alias is None:
+            raise ArgParseImportNotFound
+
+        return (self.actions, self.argparse_module_alias,
+                self.argument_parser_alias)
 
 
-class ParserDiscovery(ast.NodeVisitor):
-    def __init__(self):
-        self.main_parser_name = ""
-        self.parser_names = set()
-        self.parser_actions = []
+class ParserDiscovery(Discovery):
+
+    def __init__(self, actions: List[ast.AST], argparse_alias: Optional[str],
+                 argument_parser_alias: Optional[str]):
+        self.argument_parser_alias = argument_parser_alias
+        self.argparse_module_alias = argparse_alias
+        self.main_parser_name: Optional[str] = None
+
+        super(ParserDiscovery, self).__init__(actions)
 
     def is_this_argparse(self, node: ast.Assign) -> \
             Tuple[bool, Optional[str]]:
@@ -44,29 +65,43 @@ class ParserDiscovery(ast.NodeVisitor):
 
         name = node.targets[0].id
 
-        if not (isinstance(node.value, ast.Call) and
-                hasattr(node.value.func, "id") and
-                node.value.func.id == "ArgumentParser"):
-            return False, None
+        # ArgumentParser was imported using from ... import
+        if (isinstance(node.value, ast.Call) and
+                isinstance(node.value.func, ast.Name) and
+                node.value.func.id == self.argument_parser_alias):
+            return True, name
 
-        return True, name
+        # ArgumentParser is created using attribute call on imported module
+        if (isinstance(node.value, ast.Call) and
+                isinstance(node.value.func, ast.Attribute) and
+                node.value.func.attr == "ArgumentParser" and
+                node.value.func.value.id == self.argparse_module_alias):
+            return True, name
+
+        return False, None
 
     def visit_Assign(self, node: ast.Assign):
         # visit into children of this node is not necessary
         is_argparse, name = self.is_this_argparse(node)
         if is_argparse:
             self.main_parser_name = name
-            self.parser_names.add(name)
-            self.parser_actions.append(node)
+            self.actions.append(node)
+
         self.generic_visit(node)
 
+    def report_findings(self) -> Tuple:
+        if self.main_parser_name is None:
+            raise ArgParserNotUsed
 
-class GroupDiscovery(ast.NodeVisitor):
-    def __init__(self, parser_names: Set[str], main_name: str):
+        return self.actions, self.main_parser_name
+
+
+class GroupDiscovery(Discovery):
+    def __init__(self, actions: List[ast.AST], main_name: str):
         self.main_name = main_name
-        self.parser_names = parser_names
-        self.sections = set()
-        self.parser_actions = []
+        self.parser_names: Set[str] = {self.main_name}
+        self.groups = set()
+        super(GroupDiscovery, self).__init__(actions)
 
     def is_this_group_creation(self, node: ast.Assign):
         if not (len(node.targets) == 1 and
@@ -75,96 +110,82 @@ class GroupDiscovery(ast.NodeVisitor):
 
         name = node.targets[0].id
         if not (isinstance(node.value, ast.Call) and
-                hasattr(node.value.func, "attr") and
+                isinstance(node.value.func, ast.Attribute) and
                 node.value.func.attr == "add_argument_group"):
             return False, None
 
         if node.value.func.value.id not in self.parser_names:
             print(
-                f"Cant ensure that '{list(self.parser_names)[0]}' is the only parser"
-                f" because of use of this parser:"
+                f"Cant ensure that '{self.main_name}'"
+                f" is the only argument parser"
+                f" because of use of this parser variable:"
                 f" {node.value.func.value.id}")
             self.parser_names.add(node.value.func.value.id)
             node.value.func.value.id = self.main_name
 
         return True, name
 
-    def visit_Assign(self, node: ast.Assign) -> Any:
+    def visit_Assign(self, node: ast.Assign):
         is_group_creation, name = self.is_this_group_creation(node)
         if is_group_creation:
-            self.sections.add(name)
-            self.parser_actions.append(node)
+            self.groups.add(name)
+            self.actions.append(node)
+
+    def report_findings(self) -> Tuple:
+        return self.actions, self.main_name, self.parser_names, self.groups
 
 
-
-class ArgumentCreationDiscovery(ast.NodeVisitor):
-    def __init__(self, sections: Set[str], parser_names: Set[str],
-                 main_name: str):
+class ArgumentCreationDiscovery(Discovery):
+    def __init__(self, actions: List[ast.AST], main_name: str,
+                 parser_names: Set[str], groups: Set[str]):
         self.main_name = main_name
-        self.sections = sections
+        self.sections = groups
         self.parser_names = parser_names
-        self.parser_actions = []
+        super(ArgumentCreationDiscovery, self).__init__(actions)
 
     def is_call_on_parser_or_group(self, node: ast.Call):
-        return hasattr(node.func, "attr") and \
+        return isinstance(node.func, ast.Attribute) and \
                node.func.attr == "add_argument" and \
                (node.func.value.id in self.sections or
                 node.func.value.id in self.parser_names)
 
     def visit_Call(self, node: ast.Call) -> Any:
         if self.is_call_on_parser_or_group(node):
+            assert isinstance(node.func, ast.Attribute)
             if node.func.value.id != self.main_name:
                 node.func.value.id = self.main_name
 
-            self.parser_actions.append(ast.Expr(node))
+            self.actions.append(ast.Expr(node))
 
         self.generic_visit(node)
 
-
-class OffsetRemoval(ast.NodeTransformer):
-    def generic_visit(self, node: ast.AST) -> ast.AST:
-        if hasattr(node, "lineno"):
-            del node.lineno
-
-        if hasattr(node, "col_offset"):
-            del node.col_offset
-
-        return super().generic_visit(node)
+    def report_findings(self) -> Tuple:
+        return self.actions, self.main_name
 
 
 def obtain_prepared_parser(path):
     with open(path, "r", encoding="utf-8") as source:
-        tree = ast.parse(source.read())
+        target = ast.parse(source.read())
 
-    ## TODO find this import in code - not everyone might be using the import like this
-    actions = [ast.ImportFrom(
-        module="argparse",
-        names=[ast.alias(name="ArgumentParser")]
-    )]
-    analyzer = ParserDiscovery()
-    analyzer.visit(tree)
-    actions += analyzer.parser_actions
+    discovery_classes = [ImportDiscovery, ParserDiscovery,
+                         GroupDiscovery, ArgumentCreationDiscovery]
 
-    main_name = analyzer.main_parser_name
-    parser_names = analyzer.parser_names
+    findings = [],
+    for cls in discovery_classes:
+        discovery = cls(*findings)
+        discovery.visit(target)
+        findings = discovery.report_findings()
 
-    analyzer = GroupDiscovery(parser_names, main_name)
-    analyzer.visit(tree)
-    actions += analyzer.parser_actions
-
-    analyzer = ArgumentCreationDiscovery(analyzer.sections, parser_names,
-                                         main_name)
-    analyzer.visit(tree)
-    actions += analyzer.parser_actions
-
+    actions, main_name = findings
     module = ast.Module(body=actions, type_ignores=[])
-    module = ast.fix_missing_locations(module)
-    compiled_module = compile(module, filename="", mode="exec")
-
+    ast.fix_missing_locations(module)
     variables = {}
+
+    compiled_module = compile(module, filename="<parser>", mode="exec")
     exec(compiled_module, globals(), variables)
+
     print(variables[main_name]._actions)
 
 
 if __name__ == "__main__":
-    obtain_prepared_parser("../../main.py")
+    obtain_prepared_parser("../../TRTools/trtools/qcSTR/qcSTR.py")
