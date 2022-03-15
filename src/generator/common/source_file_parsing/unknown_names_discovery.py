@@ -84,7 +84,7 @@ def _insert_into_actions(actions: List[ast.AST], assignments: List[ast.Assign],
 
 
 def initialize_variables_in_module(module_tree: ast.Module,
-                                   parser_names: Set[str],
+                                   parser_name: str,
                                    sections: Set[str],
                                    actions: List[ast.AST]):
     builtin_names = [e for e in builtins.__dict__]
@@ -92,7 +92,7 @@ def initialize_variables_in_module(module_tree: ast.Module,
 
     # this is a set of all known names, basically the things that are already
     # known and don't have to be added to the list of actions
-    known_names = {*parser_names, *sections,
+    known_names = {parser_name, *sections,
                    *builtin_names, *lib_modules}
 
     unknown_names_discovery = UnknownNamesDiscovery(actions, known_names)
