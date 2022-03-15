@@ -1,8 +1,8 @@
 from enum import Enum
 
 class StrategyStage(Enum):
-    MACROS = 0
-    HEADER_AND_STRUCTURE = 1
+    SETUP_AND_MACROS = 0
+    HEADER = 1
     PARAMS = 2
     OUTPUTS = 3
     COMMAND = 4
