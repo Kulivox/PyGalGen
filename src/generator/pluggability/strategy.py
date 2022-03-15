@@ -1,7 +1,6 @@
+from enum import Enum
 from typing import List, Tuple, Any
 from abc import ABC, abstractmethod
-from generator.common.stages import StrategyStage
-from generator.common.stage_order import StageOrder
 
 
 class Strategy(ABC):
@@ -37,3 +36,26 @@ class Strategy(ABC):
                            f" {self.stage_order}:{self.stage_order}"
                            f":{self.manual_order}\n"
                            f"This is not allowed.")
+
+
+class StageOrder(Enum):
+    BEFORE_DEFAULT = -1
+    DEFAULT = 0
+    AFTER_DEFAULT = 1
+
+    def __lt__(self, other):
+        return self.value < other.value
+
+
+class StrategyStage(Enum):
+    SETUP_AND_MACROS = 0
+    HEADER = 1
+    PARAMS = 2
+    OUTPUTS = 3
+    COMMAND = 4
+    TESTS = 5
+    HELP = 6
+    CITATIONS = 7
+
+    def __lt__(self, other):
+        return self.value < other.value
