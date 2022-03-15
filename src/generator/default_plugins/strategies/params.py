@@ -13,10 +13,9 @@ class DefaultParams(Strategy):
     def __init__(self, args: Any):
         super(DefaultParams, self).__init__(args, self.STAGE)
 
-    def apply_strategy(self, tool_input: Any, xml_output: ET.ElementTree) \
+    def apply_strategy(self, xml_output: ET.ElementTree) \
             -> ET.ElementTree:
-        root = xml_output.getroot()
-        inputs = root.find("/tool/inputs")
+        inputs = xml_output.find(".//inputs")
 
         parser = obtain_and_convert_parser(self.args.path)
         data_inputs = set(item for item in self.args.inputs.split(","))

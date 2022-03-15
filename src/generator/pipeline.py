@@ -4,13 +4,14 @@ from pluggability.strategy import Strategy
 from argparse import ArgumentParser
 from functools import reduce
 from operator import add
-
+import xml.etree.ElementTree as ET
 
 class PipelineExecutor:
     def __init__(self, default_arg_parser: ArgumentParser):
         self.args_parser = default_arg_parser
 
-    def execute_pipeline(self, plugins: List[Plugin], input_file, output_file):
+    def execute_pipeline(self, plugins: List[Plugin], output: Any) -> \
+            ET.ElementTree:
         # initialize argument parser
         parsed_args = self._parse_args(plugins)
         strategies = list(
@@ -20,9 +21,9 @@ class PipelineExecutor:
         strategies.sort()
 
         for strategy in strategies:
-            output_file = strategy.apply_strategy(input_file, output_file)
+            output = strategy.apply_strategy(output)
 
-        return output_file
+        return output
 
     def _parse_args(self, plugins):
         for plugin in plugins:

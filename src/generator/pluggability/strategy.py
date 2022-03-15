@@ -2,6 +2,27 @@ from enum import Enum
 from typing import List, Tuple, Any
 from abc import ABC, abstractmethod
 
+class StageOrder(Enum):
+    BEFORE_DEFAULT = -1
+    DEFAULT = 0
+    AFTER_DEFAULT = 1
+
+    def __lt__(self, other):
+        return self.value < other.value
+
+
+class StrategyStage(Enum):
+    SETUP_AND_MACROS = 0
+    HEADER = 1
+    PARAMS = 2
+    OUTPUTS = 3
+    COMMAND = 4
+    TESTS = 5
+    HELP = 6
+    CITATIONS = 7
+
+    def __lt__(self, other):
+        return self.value < other.value
 
 class Strategy(ABC):
     def __init__(self, args: Any, stage: StrategyStage,
@@ -14,7 +35,7 @@ class Strategy(ABC):
 
     # applies strategy to xml_output and than returns this modified output
     @abstractmethod
-    def apply_strategy(self, tool_input: Any, xml_output: Any) -> Any:
+    def apply_strategy(self, xml_output: Any) -> Any:
         pass
 
     # necessary to correctly sort strategies during execution
@@ -38,24 +59,3 @@ class Strategy(ABC):
                            f"This is not allowed.")
 
 
-class StageOrder(Enum):
-    BEFORE_DEFAULT = -1
-    DEFAULT = 0
-    AFTER_DEFAULT = 1
-
-    def __lt__(self, other):
-        return self.value < other.value
-
-
-class StrategyStage(Enum):
-    SETUP_AND_MACROS = 0
-    HEADER = 1
-    PARAMS = 2
-    OUTPUTS = 3
-    COMMAND = 4
-    TESTS = 5
-    HELP = 6
-    CITATIONS = 7
-
-    def __lt__(self, other):
-        return self.value < other.value

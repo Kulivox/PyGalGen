@@ -23,8 +23,11 @@ def main():
 
     discovered_plugins = discover_plugins(generator.plugins)
     default_plugins = [DefaultPlugin()]
-    print(pipeline.execute_pipeline(default_plugins +
-                                    discovered_plugins, "input", "xml"))
+    result = pipeline.execute_pipeline(default_plugins +
+                                    discovered_plugins, None)
+    import xml.etree.ElementTree as ET
+    ET.indent(result, "\t")
+    print(ET.dump(result.getroot()))
 
 
 if __name__ == '__main__':
