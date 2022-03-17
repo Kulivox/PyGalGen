@@ -1,5 +1,5 @@
 from typing import Any
-import xml.etree.ElementTree as ET
+import lxml.etree as ET
 from generator.pluggability.strategy import Strategy, StrategyStage
 import generator.common.commands.command_utils as cmd
 class CommandsStrategy(Strategy):
@@ -20,7 +20,7 @@ class CommandsStrategy(Strategy):
         command = "".join(results)
 
         command_elem = xml_output.getroot().find(".//command")
-        command_elem.text = f"<![CDATA[{command}]]"
+        command_elem.text = ET.CDATA(command)
 
         return xml_output
 

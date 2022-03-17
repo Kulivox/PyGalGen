@@ -1,5 +1,5 @@
 from typing import Any, Iterable
-import xml.etree.ElementTree as ET
+import lxml.etree as ET
 from generator.pluggability.strategy import Strategy, StrategyStage
 from generator.common.params.argument_parser_conversion import \
     obtain_and_convert_parser, extract_useful_info_from_parser

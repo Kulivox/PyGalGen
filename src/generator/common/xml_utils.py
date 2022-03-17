@@ -1,9 +1,10 @@
 from typing import List, Tuple, Dict, Optional
-import xml.etree.ElementTree as ET
+import lxml.etree as ET
 
 def create_param(parent: ET.Element, argument_attr: str, type_attr: str,
                  optional_attr: bool, label_attr: str,
-                 help_attr: Optional[str] = None) -> ET.Element:
+                 help_attr: Optional[str] = None,
+                 format_attr: Optional[None] = None) -> ET.Element:
     attributes = {
         "argument": argument_attr,
         "type": type_attr,
@@ -14,12 +15,15 @@ def create_param(parent: ET.Element, argument_attr: str, type_attr: str,
     if help_attr is not None:
         attributes["help"] = help_attr
 
+    if format_attr is not None:
+        attributes["format"] = format_attr
+
     return ET.SubElement(parent, "param", attributes)
 
 def create_section(parent: ET.Element, title: str, expanded: bool,
                    help_: Optional[str] = None):
     attributes = {
-        "name": title,
+        "name": title.lower().replace(" ", "_"),
         "title": title,
         "expanded": str(expanded).lower()
     }

@@ -1,7 +1,7 @@
 from typing import Any
 import ast
 from generator.pluggability.strategy import Strategy, StrategyStage
-import xml.etree.ElementTree as ET
+import lxml.etree as ET
 
 
 class SetupStrategy(Strategy):
