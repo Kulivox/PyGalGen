@@ -1,5 +1,5 @@
 from typing import List
-import xml.etree.ElementTree as ET
+import lxml.etree as ET
 
 SPACE = " "
 
