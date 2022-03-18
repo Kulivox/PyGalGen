@@ -2,7 +2,9 @@ from enum import Enum
 from typing import List, Tuple, Any
 from abc import ABC, abstractmethod
 
-class StageOrder(Enum):
+from lxml.etree import ElementTree
+
+class ProcessingOrder(Enum):
     BEFORE_DEFAULT = -1
     DEFAULT = 0
     AFTER_DEFAULT = 1
@@ -12,7 +14,6 @@ class StageOrder(Enum):
 
 
 class StrategyStage(Enum):
-    SETUP_AND_MACROS = 0
     HEADER = 1
     PARAMS = 2
     OUTPUTS = 3
@@ -26,7 +27,7 @@ class StrategyStage(Enum):
 
 class Strategy(ABC):
     def __init__(self, args: Any, stage: StrategyStage,
-                 stage_order: StageOrder = StageOrder.AFTER_DEFAULT,
+                 stage_order: ProcessingOrder = ProcessingOrder.AFTER_DEFAULT,
                  manual_order: int = 0):
         self.args = args
         self.stage = stage
@@ -35,7 +36,7 @@ class Strategy(ABC):
 
     # applies strategy to xml_output and than returns this modified output
     @abstractmethod
-    def apply_strategy(self, xml_output: Any) -> Any:
+    def apply_strategy(self, xml_output: ElementTree) -> Any:
         pass
 
     # necessary to correctly sort strategies during execution

@@ -2,8 +2,17 @@ import argparse
 from pipeline import PipelineExecutor
 from default_plugins.default import DefaultPlugin
 from generator.plugin_discovery import discover_plugins
+from typing import Optional
 
 import generator.plugins
+
+
+# TODO create complex type for inputs
+# def well_formed_inputs_type(inputs: Optional[str]):
+#     if inputs is None:
+#         return inputs
+#
+#     try:
 
 
 def define_default_params():
@@ -12,7 +21,8 @@ def define_default_params():
     parser.add_argument("--path",
                         help="Path to the source file", required=True)
     parser.add_argument("--inputs", type=str,
-                        help="Comma separated list of names of arguments that contain paths to input files",
+                        help="Comma separated list of names and format types"
+                             " of arguments that contain paths to input files",
                         default="")
     parser.add_argument("--debug", action="store_true", default=False,
                         help="Print out debug text")
@@ -28,7 +38,7 @@ def main():
     default_plugins = [DefaultPlugin()]
 
     result = pipeline.execute_pipeline(default_plugins +
-                                       discovered_plugins, None)
+                                       discovered_plugins)
 
     result.write("result.xml")
 
