@@ -15,6 +15,8 @@ from typing import Optional, Set, Any, List
 from argparse import ArgumentParser
 import dataclasses
 
+from common.utils import LINTER_MAGIC
+
 
 @dataclasses.dataclass
 class ParamInfo:
@@ -100,4 +102,7 @@ def _determine_type(data_inputs, name, type_):
             type_ = "data"
         else:
             type_ = "text"
+    else:
+        type_ = f"{LINTER_MAGIC} argument uses complex type," \
+                f" it's type cannot be determined"
     return type_
