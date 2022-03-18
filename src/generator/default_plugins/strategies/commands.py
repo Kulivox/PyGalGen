@@ -5,8 +5,8 @@ import generator.common.commands.command_utils as cmd
 class CommandsStrategy(Strategy):
     STAGE = StrategyStage.COMMAND
 
-    def __init__(self, args: Any):
-        super().__init__(args, self.STAGE)
+    def __init__(self, args: Any, macros):
+        super().__init__(args, macros, self.STAGE)
 
     def apply_strategy(self, xml_output: ET.ElementTree) -> ET.ElementTree:
         tool_name = f"{self.args.tool_name}\n"

@@ -3,6 +3,7 @@ from typing import List, Tuple, Any
 from abc import ABC, abstractmethod
 
 from lxml.etree import ElementTree
+from generator.common.macros.macros import Macros
 
 class ProcessingOrder(Enum):
     BEFORE_DEFAULT = -1
@@ -26,17 +27,19 @@ class StrategyStage(Enum):
         return self.value < other.value
 
 class Strategy(ABC):
-    def __init__(self, args: Any, stage: StrategyStage,
+    def __init__(self, args: Any, macros: Macros, stage: StrategyStage,
                  stage_order: ProcessingOrder = ProcessingOrder.AFTER_DEFAULT,
                  manual_order: int = 0):
         self.args = args
         self.stage = stage
+        self.macros = macros
         self.stage_order = stage_order
         self.manual_order = manual_order
 
     # applies strategy to xml_output and than returns this modified output
     @abstractmethod
-    def apply_strategy(self, xml_output: ElementTree) -> Any:
+    def apply_strategy(self, xml_output: ElementTree, file_path: str = "")\
+            -> Any:
         pass
 
     # necessary to correctly sort strategies during execution

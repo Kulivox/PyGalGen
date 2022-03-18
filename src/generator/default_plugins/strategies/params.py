@@ -10,8 +10,8 @@ import generator.common.xml_utils as xu
 class DefaultParams(Strategy):
     STAGE = StrategyStage.PARAMS
 
-    def __init__(self, args: Any):
-        super(DefaultParams, self).__init__(args, self.STAGE)
+    def __init__(self, args: Any, macros):
+        super(DefaultParams, self).__init__(args, macros, self.STAGE)
 
     def apply_strategy(self, xml_output: ET.ElementTree) \
             -> ET.ElementTree:
