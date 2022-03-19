@@ -1,10 +1,12 @@
 import argparse
+
+from generator.common.constants import LOGGER_NAME
 from pipeline import PipelineExecutor
 from default_plugins.default import DefaultPlugin
 from generator.plugin_discovery import discover_plugins
 from typing import Optional
-
 import generator.plugins
+import logging
 
 
 # TODO create complex type for inputs
@@ -24,6 +26,9 @@ def define_default_params():
                         help="Comma separated list of names and format types"
                              " of arguments that contain paths to input files",
                         default="")
+
+    parser.add_argument("--verbose",  action="store_true", default=False,
+                        help="Prints out info logs")
     parser.add_argument("--debug", action="store_true", default=False,
                         help="Print out debug text")
 
@@ -31,10 +36,17 @@ def define_default_params():
 
 
 def main():
+    logging.basicConfig(level=logging.INFO)
+
     parser = define_default_params()
     pipeline = PipelineExecutor(parser)
 
+    logging.info("Created pipeline executor")
+
     discovered_plugins = discover_plugins(generator.plugins)
+
+    logging.info(f"Discovered {len(discovered_plugins)} plugins")
+
     default_plugins = [DefaultPlugin()]
 
     result = pipeline.execute_pipeline(default_plugins +
