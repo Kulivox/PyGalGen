@@ -28,7 +28,8 @@ class HeaderStrategy(Strategy):
         root = xml_output.getroot()
         root.attrib["id"] = self.args.tool_name
         root.attrib["name"] = self.args.tool_name
-        root.attrib["version"] = self.macros.tool_version
+        root.attrib["version"] = self.\
+            macros.get_real_token_name("tool_version")
 
         requirements = root.find(".//requirements")
         requirements.getparent().remove(requirements)
