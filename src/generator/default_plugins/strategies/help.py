@@ -16,7 +16,7 @@ class HelpStrategy(Strategy):
 
     def apply_strategy(self, xml_output: ElementTree,
                        file_path: str, module_name: str) -> Any:
-        parser = obtain_and_convert_parser(self.args.path)
+        parser = obtain_and_convert_parser(file_path)
 
         file_like = io.StringIO()
 

@@ -13,11 +13,11 @@ class DefaultParams(Strategy):
     def __init__(self, args: Any, macros):
         super(DefaultParams, self).__init__(args, macros, self.STAGE)
 
-    def apply_strategy(self, xml_output: ET.ElementTree, file_name: str,
+    def apply_strategy(self, xml_output: ET.ElementTree, file_path: str,
                        module_name: str) -> ET.ElementTree:
         inputs = xml_output.find(".//inputs")
 
-        parser = obtain_and_convert_parser(self.args.path)
+        parser = obtain_and_convert_parser(file_path)
         data_inputs = set(item for item in self.args.inputs.split(","))
         param_info = extract_useful_info_from_parser(parser, data_inputs)
 

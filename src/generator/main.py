@@ -27,7 +27,8 @@ def define_default_params():
                          help="Path to the source file / directory",
                          required=True)
 
-    default.add_argument("--tool_name_map", required=False, type=str,
+    default.add_argument("--tool-name-map", required=False, type=str,
+                         default="",
                          help="Comma separated list of file names and tool "
                               "names, used in tool discovery if '--bundle' "
                               "param is set. Format: file_name:tool_name,...")

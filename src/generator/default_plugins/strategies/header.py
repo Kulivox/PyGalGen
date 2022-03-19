@@ -27,8 +27,8 @@ class HeaderStrategy(Strategy):
     def apply_strategy(self, xml_output: ET.ElementTree,
                        file_path: str, module_name: str) -> Any:
         root = xml_output.getroot()
-        root.attrib["id"] = self.args.package_name
-        root.attrib["name"] = self.args.package_name
+        root.attrib["id"] = module_name
+        root.attrib["name"] = module_name
         root.attrib["version"] = self. \
             macros.get_real_token_name("tool_version")
 

@@ -1,3 +1,4 @@
+import os
 from typing import Any, List
 from pluggability.plugin import Plugin
 from argparse import ArgumentParser
@@ -5,7 +6,7 @@ from functools import reduce
 from operator import add
 from generator.common.macros.macros import MacrosFactory
 import xml.dom.minidom as minidom
-
+from os import walk
 import lxml.etree as ET
 import logging
 import copy
@@ -52,7 +53,7 @@ class PipelineExecutor:
         for path, tool_name in self._provide_file_and_tool_names(parsed_args):
             current_tree = copy.deepcopy(xml_tree)
             for strategy in strategies:
-                current_tree = strategy.apply_strategy(xml_tree, path,
+                current_tree = strategy.apply_strategy(current_tree, path,
                                                        tool_name)
             result.append((current_tree, tool_name))
 
@@ -66,7 +67,18 @@ class PipelineExecutor:
             yield args.path, args.package_name
             return
 
-        raise NotImplemented
+        file_to_name_map = {}
+        for file, name in [item.split(":") for item in args.tool_name_map.split(",")]:
+            file_to_name_map[file] = name
+
+        for path, dirs, files in os.walk(args.path):
+            for file in files:
+                if file in file_to_name_map:
+                    yield os.path.join(path, file), file_to_name_map[file]
+
+
+
+
 
     def _parse_args(self, plugins):
         for plugin in plugins:
