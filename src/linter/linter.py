@@ -8,11 +8,13 @@ def magic_found(element: ET.Element):
     if LINTER_MAGIC in element.tag:
         return True
 
-    for name, value in element.attrib.keys():
+    for name, value in element.attrib.items():
         if LINTER_MAGIC in name or LINTER_MAGIC in value:
             return True
+    if element.text is not None:
+        return LINTER_MAGIC in element.text
 
-    return LINTER_MAGIC in element.text
+    return False
 
 
 def report_problems(element: ET.Element):
