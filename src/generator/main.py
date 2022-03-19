@@ -1,12 +1,13 @@
 import argparse
 
-from generator.common.constants import LOGGER_NAME
 from pipeline import PipelineExecutor
 from default_plugins.default import DefaultPlugin
 from generator.plugin_discovery import discover_plugins
-from typing import Optional
 import generator.plugins
 import logging
+
+import xml.dom.minidom as minidom
+import lxml.etree as ET
 
 
 # TODO create complex type for inputs
@@ -52,8 +53,13 @@ def main():
     result = pipeline.execute_pipeline(default_plugins +
                                        discovered_plugins)
 
-    result.write("result.xml")
+    xml_string = ET.tostring(result.getroot())
 
+    dom = minidom.parseString(xml_string)
+    xml_string = dom.toprettyxml()
+
+    with open("result.xml", "w", encoding="utf-8") as result_file:
+        result_file.write(xml_string)
 
 if __name__ == '__main__':
     main()

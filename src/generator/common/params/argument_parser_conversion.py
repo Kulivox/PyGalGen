@@ -1,4 +1,6 @@
 import ast
+import logging
+
 import astunparse
 from generator.common.source_file_parsing.parsing_commons \
     import create_module_tree
@@ -46,17 +48,17 @@ def obtain_and_convert_parser(path: str) -> Optional[ArgumentParser]:
 
         result_module = handle_local_module_names(actions, unknown_names)
     except ArgumentParsingDiscoveryError as e:
-        print(e)
+        logging.error(e)
         return None
 
     ast.fix_missing_locations(result_module)
     compiled_module = compile(result_module, filename="<parser>", mode="exec")
-    print(astunparse.unparse(result_module))
+    logging.debug(astunparse.unparse(result_module))
     variables = {}
     try:
         exec(compiled_module, globals(), variables)
     except Exception as e:
-        print("General error, argument parser couldn't be extracted")
+        logging.error("Parser couldn't be extracted")
         return None
     return variables[name]
 

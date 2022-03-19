@@ -2,7 +2,7 @@ import ast
 from typing import List, Tuple, Optional, Any, Dict
 from common.utils import LINTER_MAGIC
 from generator.common.source_file_parsing.parsing_commons import add_parents
-
+import logging
 
 class UnknownNamesRemoval(ast.NodeVisitor):
     def __init__(self, unknown: set[str]):
@@ -36,7 +36,7 @@ class UnknownNamesRemoval(ast.NodeVisitor):
                                                 f" could not be loaded")
         # if top is assignment
         if isinstance(parent, ast.Assign):
-            print(f"Problem with assignment to {parent.targets[0].id}")
+            logging.warning(f"Problem with assignment to {parent.targets[0].id}")
             parent.value = ast.List(elts=[not_found_const],
                                     ctx=ast.Load())
             return
