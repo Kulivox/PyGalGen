@@ -20,7 +20,6 @@ class DefaultPlugin(Plugin):
                 CommandsStrategy(args, macros), HelpStrategy(args, macros)]
 
     def add_custom_params(self, params: ArgumentParser):
-        params.add_argument("--tool-name", required=True, type=str)
         params.add_argument("--dont-redirect-output", default=False,
                             action="store_true")
         params.add_argument("--tool-version", required=True, type=str)

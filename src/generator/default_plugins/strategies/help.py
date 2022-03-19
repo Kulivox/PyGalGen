@@ -15,7 +15,7 @@ class HelpStrategy(Strategy):
         super().__init__(args, macros, self.STAGE)
 
     def apply_strategy(self, xml_output: ElementTree,
-                       file_path: str = "") -> Any:
+                       file_path: str, module_name: str) -> Any:
         parser = obtain_and_convert_parser(self.args.path)
 
         file_like = io.StringIO()

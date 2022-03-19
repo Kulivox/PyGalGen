@@ -18,17 +18,18 @@ class HeaderStrategy(Strategy):
         import_ = ET.SubElement(mcs, "import")
         import_.text = "macros.xml"
         return mcs
+
     @staticmethod
     def expand_requirements():
         expand = ET.Element("expand", {"macro": "requirements"})
         return expand
 
     def apply_strategy(self, xml_output: ET.ElementTree,
-                       file_path: str = "") -> Any:
+                       file_path: str, module_name: str) -> Any:
         root = xml_output.getroot()
-        root.attrib["id"] = self.args.tool_name
-        root.attrib["name"] = self.args.tool_name
-        root.attrib["version"] = self.\
+        root.attrib["id"] = self.args.package_name
+        root.attrib["name"] = self.args.package_name
+        root.attrib["version"] = self. \
             macros.get_real_token_name("tool_version")
 
         requirements = root.find(".//requirements")
