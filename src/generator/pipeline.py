@@ -4,17 +4,18 @@ from argparse import ArgumentParser
 from functools import reduce
 from operator import add
 from generator.common.macros.macros import MacrosFactory
+import xml.dom.minidom as minidom
 
 import lxml.etree as ET
 import logging
-
+import copy
 
 class PipelineExecutor:
     def __init__(self, default_arg_parser: ArgumentParser):
         self.args_parser = default_arg_parser
 
     def execute_pipeline(self, plugins: List[Plugin]) -> \
-            ET.ElementTree:
+            int:
         # initialize argument parser
         logging.basicConfig(level=logging.WARNING)
         parsed_args = self._parse_args(plugins)
@@ -31,12 +32,14 @@ class PipelineExecutor:
         xml_tree = ET.ElementTree()
         mf = MacrosFactory()
 
+
         # xml tree of result is prepared in this step, together with macros
         for initializer in data_init:
             xml_tree = initializer.initialize_xml_tree(xml_tree)
             mf = initializer.initialize_macros(mf)
 
         macros = mf.create_macros()
+        macros.write_xml("macros.xml")
 
         strategies = list(
             reduce(add, map(lambda x: x.get_strategies(parsed_args, macros),
@@ -44,16 +47,24 @@ class PipelineExecutor:
 
         # strategies are than sorted and can be iteratively applied
         strategies.sort()
+        result = []
 
-        for strategy in strategies:
-            xml_tree = strategy.apply_strategy(xml_tree)
+        for path, tool_name in self._provide_file_and_tool_names(parsed_args):
+            current_tree = copy.deepcopy(xml_tree)
+            for strategy in strategies:
+                current_tree = strategy.apply_strategy(xml_tree, path,
+                                                       tool_name)
+            result.append((current_tree, tool_name))
 
-        return xml_tree
+        self._write_output(result)
+
+        return 0
 
     @staticmethod
     def _provide_file_and_tool_names(args: Any) -> (str, str):
         if not args.bundle:
-            return args.path, args.tool_name
+            yield args.path, args.package_name
+            return
 
         raise NotImplemented
 
@@ -62,3 +73,15 @@ class PipelineExecutor:
             plugin.add_custom_params(self.args_parser)
 
         return self.args_parser.parse_args()
+
+    @staticmethod
+    def _write_output(trees: List[ET.ElementTree]):
+        for tree, tool_name in trees:
+            xml_string = ET.tostring(tree.getroot())
+
+            dom = minidom.parseString(xml_string)
+            xml_string = dom.toprettyxml()
+
+            with open(f"{tool_name}.xml", "w", encoding="utf-8") as result_file:
+                result_file.write(xml_string)
+

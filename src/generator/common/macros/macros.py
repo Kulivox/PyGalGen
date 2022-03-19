@@ -43,7 +43,7 @@ class Macros:
     tokens: dict[str, str]
     xml_imports: dict[str, ET.Element]
 
-    def generate_xml(self):
+    def generate_xml(self) -> ET.Element:
         root = ET.Element("macros")
         for name, value in self.tokens.items():
             sub_element = ET.SubElement(root, "token", {"name": name})
@@ -52,6 +52,14 @@ class Macros:
         for name, element in self.xml_imports.items():
             sub_element = ET.SubElement(root, "xml", {"name": name})
             sub_element.append(element)
+
+        return root
+
+    def write_xml(self, path: str):
+        root = self.generate_xml()
+        tree = ET.ElementTree(root)
+
+        tree.write(path, pretty_print=True)
 
     def get_real_token_name(self, name: str):
         transformed_name = _transform_name_to_token_name(name)
