@@ -1,6 +1,6 @@
 import argparse
 import sys
-from .pipeline import PipelineExecutor
+from pygalgen.generator.pipeline import PipelineExecutor
 from pygalgen.generator.plugin_discovery import discover_plugins
 import logging
 

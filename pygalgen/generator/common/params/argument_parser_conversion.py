@@ -52,7 +52,6 @@ def obtain_and_convert_parser(path: str) -> Optional[ArgumentParser]:
 
     ast.fix_missing_locations(result_module)
     compiled_module = compile(result_module, filename="<parser>", mode="exec")
-    logging.debug(astunparse.unparse(result_module))
     variables = {}
     try:
         exec(compiled_module, globals(), variables)

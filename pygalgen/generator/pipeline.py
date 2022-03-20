@@ -1,6 +1,6 @@
 import os
 from typing import Any, List
-from pluggability.plugin import Plugin
+from pygalgen.generator.pluggability.plugin import Plugin
 from argparse import ArgumentParser
 from pygalgen.generator.common.macros.macros import MacrosFactory
 import xml.dom.minidom as minidom
