@@ -25,7 +25,7 @@ def report_problems(element: ET.Element):
         report_problems(child)
 
 
-def main():
+def run():
     parser = argparse.ArgumentParser()
     parser.add_argument("--path", type=str, help="Path to input file",
                         required=True)
@@ -38,4 +38,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    run()

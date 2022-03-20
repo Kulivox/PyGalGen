@@ -2,11 +2,8 @@ import os
 from typing import Any, List
 from pluggability.plugin import Plugin
 from argparse import ArgumentParser
-from functools import reduce
-from operator import add
 from generator.common.macros.macros import MacrosFactory
 import xml.dom.minidom as minidom
-from os import walk
 import lxml.etree as ET
 import logging
 import copy
@@ -84,10 +81,18 @@ class PipelineExecutor:
             yield args.path, args.package_name
             return
 
+        if not args.tool_name_map:
+            logging.warning("No mapping of file names to "
+                            "tool names was provided")
+
         file_to_name_map = {}
         for file, name in [item.split(":") for item in
                            args.tool_name_map.split(",")]:
             file_to_name_map[file] = name
+
+        if not os.path.exists(args.path):
+            logging.error("Provided path doesn't lead to valid directory")
+            exit(1)
 
         for path, dirs, files in os.walk(args.path):
             for file in files:
