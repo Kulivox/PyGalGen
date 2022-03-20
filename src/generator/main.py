@@ -17,8 +17,14 @@ import logging
 
 def define_default_params():
     parser = argparse.ArgumentParser("Command parser")
-    default = parser.add_argument_group("Default parameters")
-    default.add_argument("--package-name", required=True, type=str)
+    default = parser.add_argument_group("Default program parameters")
+    default.add_argument("--package-name", required=True, type=str,
+                         help="Name of the package for which you are "
+                              "creating the tool definition file")
+
+    default.add_argument("--package-version", type=str, required=True,
+                         help="Version of the package")
+
     default.add_argument("--bundle", action="store_true", default=False,
                          help="If this argument is set, argument '--path' "
                               "will point to root directory of tool bundle "
@@ -38,10 +44,12 @@ def define_default_params():
                               " of arguments that contain paths to input files",
                          default="")
 
-    default.add_argument("--verbose", action="store_true", default=False,
-                         help="Prints out info logs")
-    default.add_argument("--debug", action="store_true", default=False,
-                         help="Print out debug text")
+    logging_grp = parser.add_argument_group("Logging arguments")
+
+    logging_grp.add_argument("--verbose", action="store_true", default=False,
+                             help="Prints out info logs")
+    logging_grp.add_argument("--debug", action="store_true", default=False,
+                             help="Print out debug text")
 
     return parser
 

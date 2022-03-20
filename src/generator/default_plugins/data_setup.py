@@ -16,8 +16,7 @@ class DefaultDataSetup(DataSetup):
 
     def initialize_macros(self, macros_factory: MacrosFactory) -> MacrosFactory:
         version = macros_factory.add_token("tool_version",
-                                           self.args.tool_version)
+                                           self.args.package_version)
         macros_factory.add_requirement(self.args.package_name, version)
-        macros_factory.add_token("profile", self.args.profile)
 
         return macros_factory
