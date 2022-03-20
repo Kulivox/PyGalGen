@@ -5,6 +5,9 @@ from generator.pluggability.data_setup import DataSetup
 from generator.common.macros.macros import Macros
 
 class Plugin(ABC):
+    def __init__(self, assets_path: str):
+        self.assets_path = assets_path
+
     def get_strategies(self, args: Any, macros: Macros) -> List[Strategy]:
         return []
 

@@ -27,7 +27,8 @@ def load_plugin(configuration: dict[str, Any], plugin_dir: str) -> Plugin:
     for req in plugin_dct["requirements"]:
         if req not in installed_modules:
             logging.warning(f"Loading of plugin '{plugin_dct['name']}' "
-                            f"failed. Reason: requirements of this plugin "
+                            f"failed. Reason: requirement '{req}' of this "
+                            f"plugin "
                             f"can't be satisfied")
             raise PluginDiscoveryException()
 
@@ -58,7 +59,7 @@ def load_plugin(configuration: dict[str, Any], plugin_dir: str) -> Plugin:
                         f" {plugin_dct['path']}")
         raise PluginDiscoveryException()
 
-    return classes[0](plugin_dct["assets"])
+    return classes[0](os.path.join(plugin_dir, plugin_dct["assets"]))
 
 
 def discover_plugins(path: str):
