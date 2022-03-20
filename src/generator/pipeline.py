@@ -25,8 +25,7 @@ class PipelineExecutor:
     def __init__(self, default_arg_parser: ArgumentParser):
         self.args_parser = default_arg_parser
 
-    def execute_pipeline(self, plugins: List[Plugin]) -> \
-            int:
+    def execute_pipeline(self, plugins: List[Plugin]) -> int:
 
         # initialize argument parser
         parsed_args = self._parse_args(plugins)

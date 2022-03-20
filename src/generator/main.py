@@ -1,18 +1,11 @@
 import argparse
+import sys
 
 from pipeline import PipelineExecutor
 from default_plugins.default import DefaultPlugin
 from generator.plugin_discovery import discover_plugins
 import generator.plugins
 import logging
-
-
-# TODO create complex type for inputs
-# def well_formed_inputs_type(inputs: Optional[str]):
-#     if inputs is None:
-#         return inputs
-#
-#     try:
 
 
 def define_default_params():
@@ -51,10 +44,26 @@ def define_default_params():
     logging_grp.add_argument("--debug", action="store_true", default=False,
                              help="Print out debug text")
 
+    plugins = parser.add_argument_group("Plugin discovery")
+    plugins.add_argument("--plugins-path", type=str, default="plugins",
+                         help="Path to directory containing plugins you want "
+                              "to use")
     return parser
 
 
-def main():
+# using this function kind of goes against the idea of the argparse,
+# but it's necessary
+# to load plugins, plugin directory path has to be known, argument parsing of
+# argparse object happens after plugin loading. Because of this problem,
+def obtain_plugins_path(args):
+    for i, item in enumerate(args):
+        if item == "--plugins-path" and i + 1 < len(args):
+            return args[i + 1]
+
+    return "plugins"
+
+
+def main(args):
     logging.basicConfig(level=logging.DEBUG)
 
     parser = define_default_params()
@@ -62,11 +71,13 @@ def main():
 
     logging.info("Created pipeline executor")
 
-    discovered_plugins = discover_plugins(generator.plugins)
+    plugin_path = obtain_plugins_path(args)
+
+    default_plugins = discover_plugins("default_plugins")
+
+    discovered_plugins = discover_plugins(plugin_path)
 
     logging.info(f"Discovered {len(discovered_plugins)} plugins")
-
-    default_plugins = [DefaultPlugin()]
 
     result = pipeline.execute_pipeline(default_plugins +
                                        discovered_plugins)
@@ -75,4 +86,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv)

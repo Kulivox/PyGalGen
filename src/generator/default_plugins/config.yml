@@ -1,0 +1,6 @@
+plugin:
+  name: Default Plugin
+  requirements:
+    - lxml
+  path: default.py
+  assets: assets
