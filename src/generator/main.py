@@ -1,10 +1,7 @@
 import argparse
 import sys
-
 from pipeline import PipelineExecutor
-from default_plugins.default import DefaultPlugin
 from generator.plugin_discovery import discover_plugins
-import generator.plugins
 import logging
 
 
@@ -87,5 +84,9 @@ def main(args):
     return result
 
 
-if __name__ == '__main__':
+def run():
     main(sys.argv)
+
+
+if __name__ == '__main__':
+    run()
