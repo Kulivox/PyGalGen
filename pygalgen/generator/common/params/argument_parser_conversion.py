@@ -1,23 +1,22 @@
 import ast
 import logging
 
-import astunparse
-from generator.common.source_file_parsing.parsing_commons \
+from pygalgen.generator.common.source_file_parsing.parsing_commons \
     import create_module_tree
-from generator.common.source_file_parsing.parser_discovery_and_init \
+from pygalgen.generator.common.source_file_parsing.parser_discovery_and_init \
     import get_parser_init_and_actions
-from generator.common.source_file_parsing.unknown_names_discovery \
+from pygalgen.generator.common.source_file_parsing.unknown_names_discovery \
     import initialize_variables_in_module
-from generator.common.source_file_parsing.local_module_parsing import \
+from pygalgen.generator.common.source_file_parsing.local_module_parsing import \
     handle_local_module_names
-from generator.common.source_file_parsing.parsing_exceptions import \
+from pygalgen.generator.common.source_file_parsing.parsing_exceptions import \
     ArgumentParsingDiscoveryError
 
 from typing import Optional, Set, Any, List
 from argparse import ArgumentParser
 import dataclasses
 
-from common.utils import LINTER_MAGIC
+from pygalgen.common.utils import LINTER_MAGIC
 
 
 @dataclasses.dataclass

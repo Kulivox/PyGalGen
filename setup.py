@@ -3,7 +3,7 @@ import setuptools
 
 DESCRIPTION = "Toolkit used for generation and validation of Galaxy tool " \
               "definition files of python programs "
-NAME = "galpygen"
+NAME = "pygalgen"
 AUTHOR = "Michal Klinka"
 AUTHOR_EMAIL = "mich.klinka@gmail.com"
 MAINTAINER = "Michal Klinka"
@@ -11,7 +11,7 @@ MAINTAINER_EMAIL = "mich.klinka@gmail.com"
 DOWNLOAD_URL = 'https://github.com/Kulivox/TRToolsTDFGenerator'
 LICENSE = 'MIT'
 
-VERSION = "0.1.0"
+VERSION = "0.1.4"
 
 
 with open("README.md", "r", encoding="utf-8") as fh:
@@ -28,8 +28,8 @@ setuptools.setup(
     license_file="LICENSE",
     entry_points={
         'console_scripts': [
-            'pygalgen=generator.main:run',
-            'pygallint=linter.linter:run'
+            'pygalgen=pygalgen.generator.main:run',
+            'pygallint=pygalgen.linter.linter:run'
         ],
     },
     url=DOWNLOAD_URL,
@@ -42,7 +42,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    package_dir={"": "pygalgen"},
-    packages=setuptools.find_packages(where="pygalgen"),
+    install_requires=["lxml", "PyYAML"],
+    packages=setuptools.find_packages(),
     python_requires=">=3.10",
 )

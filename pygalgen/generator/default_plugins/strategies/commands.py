@@ -1,7 +1,7 @@
 from typing import Any
 import lxml.etree as ET
-from generator.pluggability.strategy import Strategy, StrategyStage
-import generator.common.commands.command_utils as cmd
+from pygalgen.generator.pluggability.strategy import Strategy, StrategyStage
+import pygalgen.generator.common.commands.command_utils as cmd
 class CommandsStrategy(Strategy):
     STAGE = StrategyStage.COMMAND
 

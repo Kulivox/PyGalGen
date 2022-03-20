@@ -2,7 +2,7 @@ import os
 from typing import Any, List
 from pluggability.plugin import Plugin
 from argparse import ArgumentParser
-from generator.common.macros.macros import MacrosFactory
+from pygalgen.generator.common.macros.macros import MacrosFactory
 import xml.dom.minidom as minidom
 import lxml.etree as ET
 import logging

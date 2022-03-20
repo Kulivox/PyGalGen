@@ -1,10 +1,10 @@
 from typing import Any, Iterable
 import lxml.etree as ET
-from generator.pluggability.strategy import Strategy, StrategyStage
-from generator.common.params.argument_parser_conversion import \
+from pygalgen.generator.pluggability.strategy import Strategy, StrategyStage
+from pygalgen.generator.common.params.argument_parser_conversion import \
     obtain_and_convert_parser, extract_useful_info_from_parser
 
-import generator.common.xml_utils as xu
+import pygalgen.generator.common.xml_utils as xu
 
 
 class DefaultParams(Strategy):

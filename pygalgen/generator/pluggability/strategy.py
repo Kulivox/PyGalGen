@@ -3,7 +3,7 @@ from typing import List, Tuple, Any
 from abc import ABC, abstractmethod
 
 from lxml.etree import ElementTree
-from generator.common.macros.macros import Macros
+from pygalgen.generator.common.macros.macros import Macros
 
 class ProcessingOrder(Enum):
     BEFORE_DEFAULT = -1

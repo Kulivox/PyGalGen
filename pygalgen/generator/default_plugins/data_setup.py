@@ -2,8 +2,8 @@ import os
 
 import lxml.etree as ET
 
-from generator.common.macros.macros import MacrosFactory
-from generator.pluggability.data_setup import DataSetup
+from pygalgen.generator.common.macros.macros import MacrosFactory
+from pygalgen.generator.pluggability.data_setup import DataSetup
 from typing import Any
 class DefaultDataSetup(DataSetup):
 

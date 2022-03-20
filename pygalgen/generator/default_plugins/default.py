@@ -1,10 +1,10 @@
-from generator.default_plugins.strategies.help import HelpStrategy
-from generator.pluggability.data_setup import DataSetup
-from generator.pluggability.plugin import Plugin
-from generator.default_plugins.strategies.params import DefaultParams
-from generator.default_plugins.strategies.commands import CommandsStrategy
-from generator.default_plugins.data_setup import DefaultDataSetup
-from generator.default_plugins.strategies.header import HeaderStrategy
+from pygalgen.generator.default_plugins.strategies.help import HelpStrategy
+from pygalgen.generator.pluggability.data_setup import DataSetup
+from pygalgen.generator.pluggability.plugin import Plugin
+from pygalgen.generator.default_plugins.strategies.params import DefaultParams
+from pygalgen.generator.default_plugins.strategies.commands import CommandsStrategy
+from pygalgen.generator.default_plugins.data_setup import DefaultDataSetup
+from pygalgen.generator.default_plugins.strategies.header import HeaderStrategy
 
 from argparse import ArgumentParser
 from typing import Any

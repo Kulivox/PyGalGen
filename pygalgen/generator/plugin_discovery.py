@@ -2,7 +2,7 @@ import importlib
 import importlib.util
 import pkgutil
 import inspect
-from generator.pluggability.plugin import Plugin
+from pygalgen.generator.pluggability.plugin import Plugin
 from typing import List
 from typing import Any
 import os

@@ -2,8 +2,8 @@ from typing import Any
 
 import lxml.etree as ET
 
-from generator.pluggability.strategy import Strategy, StrategyStage
-from generator.common.macros.macros import Macros
+from pygalgen.generator.pluggability.strategy import Strategy, StrategyStage
+from pygalgen.generator.common.macros.macros import Macros
 
 
 class HeaderStrategy(Strategy):

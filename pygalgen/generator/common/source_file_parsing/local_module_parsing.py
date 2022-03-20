@@ -1,7 +1,7 @@
 import ast
 from typing import List, Tuple, Optional, Any, Dict
-from common.utils import LINTER_MAGIC
-from generator.common.source_file_parsing.parsing_commons import add_parents
+from pygalgen.common.utils import LINTER_MAGIC
+from pygalgen.generator.common.source_file_parsing.parsing_commons import add_parents
 import logging
 
 

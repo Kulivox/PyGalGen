@@ -1,7 +1,7 @@
 import abc
-from generator.common.macros.macros import MacrosFactory
+from pygalgen.generator.common.macros.macros import MacrosFactory
 from lxml.etree import ElementTree
-from generator.pluggability.strategy import ProcessingOrder
+from pygalgen.generator.pluggability.strategy import ProcessingOrder
 from typing import Any
 
 class DataSetup(abc.ABC):

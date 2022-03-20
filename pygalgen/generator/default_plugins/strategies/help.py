@@ -1,8 +1,8 @@
 from lxml.etree import ElementTree
-from generator.common.params.argument_parser_conversion import \
+from pygalgen.generator.common.params.argument_parser_conversion import \
     obtain_and_convert_parser
-from generator.common.macros.macros import Macros
-from generator.pluggability.strategy import Strategy, StrategyStage
+from pygalgen.generator.common.macros.macros import Macros
+from pygalgen.generator.pluggability.strategy import Strategy, StrategyStage
 from typing import Any
 
 import io

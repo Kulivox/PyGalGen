@@ -1,8 +1,8 @@
 from typing import List, Any
 from abc import ABC, abstractmethod
-from generator.pluggability.strategy import Strategy
-from generator.pluggability.data_setup import DataSetup
-from generator.common.macros.macros import Macros
+from pygalgen.generator.pluggability.strategy import Strategy
+from pygalgen.generator.pluggability.data_setup import DataSetup
+from pygalgen.generator.common.macros.macros import Macros
 
 class Plugin(ABC):
     def __init__(self, assets_path: str):
