@@ -68,19 +68,21 @@ def main(args):
 
     parser = define_default_params()
     pipeline = PipelineExecutor(parser)
-
     logging.info("Created pipeline executor")
+
+    default_plugins = discover_plugins("default_plugins")
+    logging.info(f"Discovered {len(default_plugins)} default"
+                 f" plugin{'' if len(default_plugins) == 1 else 's'}")
 
     plugin_path = obtain_plugins_path(args)
 
-    default_plugins = discover_plugins("default_plugins")
+    custom_plugins = discover_plugins(plugin_path)
 
-    discovered_plugins = discover_plugins(plugin_path)
-
-    logging.info(f"Discovered {len(discovered_plugins)} plugins")
+    logging.info(f"Discovered {len(custom_plugins)} custom"
+                 f" plugin{'' if len(default_plugins) == 1 else 's'}")
 
     result = pipeline.execute_pipeline(default_plugins +
-                                       discovered_plugins)
+                                       custom_plugins)
 
     return result
 

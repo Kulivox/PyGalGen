@@ -54,13 +54,18 @@ class PipelineExecutor:
         macros = mf.create_macros()
         macros.write_xml("macros.xml")
 
-        strategies = list(
-            reduce(add, map(lambda x: x.get_strategies(parsed_args, macros),
-                            plugins)))
+        strategies = []
+        for plugin_strategies in [plugin.get_strategies(parsed_args, macros)
+                                  for plugin in plugins]:
+            strategies += plugin_strategies
 
         # strategies are than sorted and can be iteratively applied
         strategies.sort()
         result = []
+
+        if not strategies:
+            logging.warning("No strategies were loaded")
+            return 0
 
         for path, tool_name in self._provide_file_and_tool_names(parsed_args):
             current_tree = copy.deepcopy(xml_tree)
@@ -106,3 +111,4 @@ class PipelineExecutor:
             with open(f"{tool_name}.xml", "w",
                       encoding="utf-8") as result_file:
                 result_file.write(xml_string)
+                logging.info(f"Created tool def file for {tool_name}")
