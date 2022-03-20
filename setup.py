@@ -11,7 +11,7 @@ MAINTAINER_EMAIL = "mich.klinka@gmail.com"
 DOWNLOAD_URL = 'https://github.com/Kulivox/TRToolsTDFGenerator'
 LICENSE = 'MIT'
 
-VERSION = "0.1.8"
+VERSION = "0.1.10"
 
 
 with open("README.md", "r", encoding="utf-8") as fh:
@@ -44,5 +44,6 @@ setuptools.setup(
     ],
     install_requires=["lxml", "PyYAML"],
     packages=setuptools.find_packages(),
+    include_package_data=True,
     python_requires=">=3.10",
 )

@@ -3,7 +3,8 @@ import sys
 from pygalgen.generator.pipeline import PipelineExecutor
 from pygalgen.generator.plugin_discovery import discover_plugins
 import logging
-
+import pygalgen.generator.default_plugins
+import importlib.resources as res
 
 def define_default_params():
     parser = argparse.ArgumentParser("Command parser")
@@ -67,7 +68,8 @@ def main(args):
     pipeline = PipelineExecutor(parser)
     logging.info("Created pipeline executor")
 
-    default_plugins = discover_plugins("default_plugins")
+    path_to_default = res.files(pygalgen.generator.default_plugins)
+    default_plugins = discover_plugins(path_to_default)
     logging.info(f"Discovered {len(default_plugins)} default"
                  f" plugin{'' if len(default_plugins) == 1 else 's'}")
 

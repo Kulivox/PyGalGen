@@ -2,9 +2,10 @@ import importlib
 import importlib.util
 import pkgutil
 import inspect
+from importlib.abc import Traversable
+
 from pygalgen.generator.pluggability.plugin import Plugin
-from typing import List
-from typing import Any
+from typing import Any, Union
 import os
 import yaml
 import logging
@@ -62,7 +63,7 @@ def load_plugin(configuration: dict[str, Any], plugin_dir: str) -> Plugin:
     return classes[0](os.path.join(plugin_dir, plugin_dct["assets"]))
 
 
-def discover_plugins(path: str):
+def discover_plugins(path: Union[str, Traversable]):
     try:
         result = []
         for path, _, files in os.walk(path):
