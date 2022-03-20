@@ -11,28 +11,41 @@ import lxml.etree as ET
 import logging
 import copy
 
+# because logging.basicConfig() doesn't reset the settings, but adds a
+# logging handler to a list of handlers, this list of handlers has to be
+# cleaned up before changing logging configuration
+def set_logging_settings(fmt: str, level: int):
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+
+    logging.basicConfig(format=fmt, level=level)
+
+
 class PipelineExecutor:
     def __init__(self, default_arg_parser: ArgumentParser):
         self.args_parser = default_arg_parser
 
     def execute_pipeline(self, plugins: List[Plugin]) -> \
             int:
+
         # initialize argument parser
-        logging.basicConfig(level=logging.WARNING)
         parsed_args = self._parse_args(plugins)
 
+        # initialize logger
+        format_ = "%(levelname)s:%(module)s:%(message)s"
+        set_logging_settings(format_, logging.WARNING)
         if parsed_args.verbose:
-            logging.basicConfig(level=logging.INFO)
+            set_logging_settings(format_, level=logging.INFO)
 
         if parsed_args.debug:
-            logging.basicConfig(level=logging.DEBUG)
+            set_logging_settings(format_, level=logging.DEBUG)
 
+        # prepare data preparation plugins
         data_init = list(plg.get_data_setup(parsed_args) for plg in plugins)
         data_init.sort()
 
         xml_tree = ET.ElementTree()
         mf = MacrosFactory()
-
 
         # xml tree of result is prepared in this step, together with macros
         for initializer in data_init:
@@ -68,17 +81,14 @@ class PipelineExecutor:
             return
 
         file_to_name_map = {}
-        for file, name in [item.split(":") for item in args.tool_name_map.split(",")]:
+        for file, name in [item.split(":") for item in
+                           args.tool_name_map.split(",")]:
             file_to_name_map[file] = name
 
         for path, dirs, files in os.walk(args.path):
             for file in files:
                 if file in file_to_name_map:
                     yield os.path.join(path, file), file_to_name_map[file]
-
-
-
-
 
     def _parse_args(self, plugins):
         for plugin in plugins:
@@ -94,6 +104,6 @@ class PipelineExecutor:
             dom = minidom.parseString(xml_string)
             xml_string = dom.toprettyxml()
 
-            with open(f"{tool_name}.xml", "w", encoding="utf-8") as result_file:
+            with open(f"{tool_name}.xml", "w",
+                      encoding="utf-8") as result_file:
                 result_file.write(xml_string)
-

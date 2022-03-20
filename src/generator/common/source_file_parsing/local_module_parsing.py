@@ -4,6 +4,7 @@ from common.utils import LINTER_MAGIC
 from generator.common.source_file_parsing.parsing_commons import add_parents
 import logging
 
+
 class UnknownNamesRemoval(ast.NodeVisitor):
     def __init__(self, unknown: set[str]):
         self.unknown = unknown
@@ -33,10 +34,11 @@ class UnknownNamesRemoval(ast.NodeVisitor):
     def _fix_name(self, node: ast.Name, name: str):
         parent, current = self._reach_top(node)
         not_found_const = ast.Constant(value=f"{LINTER_MAGIC} Name {name}"
-                                                f" could not be loaded")
+                                             f" could not be loaded")
         # if top is assignment
         if isinstance(parent, ast.Assign):
-            logging.warning(f"Problem with assignment to {parent.targets[0].id}")
+            logging.warning(
+                f"Problem with assignment to {parent.targets[0].id}")
             parent.value = ast.List(elts=[not_found_const],
                                     ctx=ast.Load())
             return
