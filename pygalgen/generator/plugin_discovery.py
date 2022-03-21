@@ -2,6 +2,7 @@ import importlib
 import importlib.util
 import pkgutil
 import inspect
+import sys
 from importlib.abc import Traversable
 
 from pygalgen.generator.pluggability.plugin import Plugin
@@ -33,9 +34,13 @@ def load_plugin(configuration: dict[str, Any], plugin_dir: str) -> Plugin:
                             f"can't be satisfied")
             raise PluginDiscoveryException()
 
-    _, module_name = os.path.split(plugin_dct["path"])
+    path_to_module, module_name = os.path.split(plugin_dct["path"])
     module_name = os.path.splitext(module_name)[0]
     file_path = os.path.join(plugin_dir, plugin_dct["path"])
+
+    # Beware, what follows is a revoltingly dirty hack to solve import problems
+    plugin_module_dir_path = os.path.join(plugin_dir, path_to_module)
+    sys.path.append(plugin_module_dir_path)
 
     spec = importlib.util.spec_from_file_location(module_name, file_path)
     module = importlib.util.module_from_spec(spec)
@@ -60,7 +65,11 @@ def load_plugin(configuration: dict[str, Any], plugin_dir: str) -> Plugin:
                         f" {plugin_dct['path']}")
         raise PluginDiscoveryException()
 
-    return classes[0](os.path.join(plugin_dir, plugin_dct["assets"]))
+    assets_path = None
+    if "assets" in plugin_dct and plugin_dct["assets"] is not None:
+        assets_path = os.path.join(plugin_dir, plugin_dct["assets"])
+
+    return classes[0](assets_path)
 
 
 def discover_plugins(path: Union[str, Traversable]):
