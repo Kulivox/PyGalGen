@@ -8,6 +8,7 @@ import lxml.etree as ET
 import logging
 import copy
 
+
 # because logging.basicConfig() doesn't reset the settings, but adds a
 # logging handler to a list of handlers, this list of handlers has to be
 # cleaned up before changing logging configuration
@@ -37,7 +38,9 @@ class PipelineExecutor:
             set_logging_settings(format_, level=logging.DEBUG)
 
         # prepare data preparation plugins
-        data_init = list(plg.get_data_setup(parsed_args) for plg in plugins)
+        data_init = list(filter(lambda init: init is not None,
+                                (plg.get_data_setup(parsed_args)
+                                 for plg in plugins if plg is not None)))
         data_init.sort()
 
         xml_tree = ET.ElementTree()
@@ -64,7 +67,7 @@ class PipelineExecutor:
             logging.warning("No strategies were loaded")
             return 0
 
-        for path, tool_name in self._provide_file_and_tool_names(parsed_args):
+        for path, tool_name in self._provide_file_and_tool_name(parsed_args):
             current_tree = copy.deepcopy(xml_tree)
             for strategy in strategies:
                 current_tree = strategy.apply_strategy(current_tree, path,
@@ -75,6 +78,14 @@ class PipelineExecutor:
 
         return 0
 
+    @staticmethod
+    def _provide_file_and_tool_name(args: Any):
+        yield args.path, args.package_name
+        return
+
+    # this method is currently not used because handling whole bundles
+    # creates additional overhead. Currently, the only supported method of
+    # wrapper creation is creating them one by one
     @staticmethod
     def _provide_file_and_tool_names(args: Any) -> (str, str):
         if not args.bundle:
