@@ -1,7 +1,7 @@
 import argparse
 import lxml.etree as ET
 
-from common.utils import LINTER_MAGIC
+from pygalgen.common.utils import LINTER_MAGIC
 
 
 def magic_found(element: ET.Element):

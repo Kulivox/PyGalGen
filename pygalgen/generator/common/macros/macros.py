@@ -1,6 +1,6 @@
 import lxml.etree as ET
 from dataclasses import dataclass
-from typing import Union
+from typing import Union, Tuple
 
 
 def _transform_name_to_token_name(name: str):
@@ -17,9 +17,9 @@ class MacrosFactory:
     def load_from_file(self, path: str):
         pass
 
-    def add_token(self, name: str, value: str) -> str:
+    def add_token(self, name: str, value: str, cdata: bool = False) -> str:
         token_name = _transform_name_to_token_name(name)
-        self.tokens[token_name] = value
+        self.tokens[token_name] = value, cdata
         return token_name
 
     def add_xml_import(self, name: str, value: ET.Element):
@@ -40,14 +40,15 @@ class MacrosFactory:
 
 @dataclass
 class Macros:
-    tokens: dict[str, str]
+    tokens: dict[str, Tuple[str, bool]]
     xml_imports: dict[str, ET.Element]
 
     def generate_xml(self) -> ET.Element:
         root = ET.Element("macros")
-        for name, value in self.tokens.items():
+        for name, (value, cdata) in self.tokens.items():
             sub_element = ET.SubElement(root, "token", {"name": name})
-            sub_element.text = value
+            text = value if not cdata else ET.CDATA(value)
+            sub_element.text = text
 
         for name, element in self.xml_imports.items():
             sub_element = ET.SubElement(root, "xml", {"name": name})

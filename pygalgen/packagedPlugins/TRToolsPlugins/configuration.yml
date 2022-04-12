@@ -1,0 +1,6 @@
+plugin:
+  name: TRTools Plugin
+  requirements:
+    - lxml
+  path: trtoolsPlugin.py
+  assets: assets

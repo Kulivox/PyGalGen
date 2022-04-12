@@ -18,3 +18,15 @@ class DataSetup(abc.ABC):
     @abc.abstractmethod
     def initialize_xml_tree(self, xml_tree: ElementTree) -> ElementTree:
         pass
+
+    def __lt__(self, other):
+        other: DataSetup
+
+        if self.order != other.order:
+            return self.order < other.order
+
+        raise RuntimeError(f"{self.__class__.__name__} and"
+                           f" {other.__class__.__name__} have"
+                           f" the same sort order"
+                           f" {self.order}\n"
+                           f"This is not allowed.")

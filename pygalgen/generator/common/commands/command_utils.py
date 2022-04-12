@@ -3,6 +3,8 @@ import lxml.etree as ET
 
 SPACE = " "
 
+class DefinitionNotFoundException(Exception):
+    pass
 
 def create_element_with_body(kind: str, head: str,
                              body: List[str], comment: str,
@@ -14,6 +16,7 @@ def create_element_with_body(kind: str, head: str,
     result += ("\n" + indent * SPACE).join(body) + "\n"
 
     result += f"{depth * indent * SPACE}#end {kind}\n"
+    result += f"{depth * indent * SPACE}## end {comment}\n"
     return result
 
 # attribute names look like standard shell arguments,
@@ -53,4 +56,19 @@ def transform_repeat(element: ET.Element, section: str, depth: int):
                                     [transform_basic_param(param,
                                                            iteration_var.lstrip("$"), 1)],
                                     f"{attributes['name']} definition", depth)
+
+
+def update_definition(command: ET.Element, param_name: str, new_definition: str) -> None:
+    old_text = command.text
+    start_line = f"## {param_name} definition\n"
+    start = old_text.find(start_line)
+
+    if start == -1:
+        raise DefinitionNotFoundException
+
+    start = start + len(start_line)
+
+    end_line = f"## end {param_name} definition\n"
+    end = old_text.find(end_line, start=start)
+    command.text = old_text[0:start] + new_definition + old_text[end:]
 
