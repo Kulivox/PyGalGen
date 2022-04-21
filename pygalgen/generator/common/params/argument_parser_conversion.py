@@ -1,5 +1,6 @@
 import ast
 import logging
+import uuid
 
 from pygalgen.generator.common.source_file_parsing.parsing_commons \
     import create_module_tree
@@ -26,6 +27,7 @@ class ParamInfo:
     attribute: str
     label: str
     section: str
+    section_label:str
     default_val: Any
     help: Optional[str] = None
     optional: bool = False
@@ -36,7 +38,12 @@ class ParamInfo:
 
 
 def obtain_and_convert_parser(path: str) -> Optional[ArgumentParser]:
-    tree = create_module_tree(path)
+    try:
+        tree = create_module_tree(path)
+    except FileNotFoundError:
+        logging.error("Input file not found")
+        return None
+
     try:
         actions, name, section_names = \
             get_parser_init_and_actions(tree)
@@ -62,17 +69,22 @@ def obtain_and_convert_parser(path: str) -> Optional[ArgumentParser]:
 
 
 def extract_useful_info_from_parser(parser: ArgumentParser,
-                                    data_inputs: Set[str]) -> List[ParamInfo]:
+                                    data_inputs: Set[str], reserved_names: Set[str]) -> List[ParamInfo]:
     params = []
+    name_map = dict()
+    section_map = dict()
     for action in parser._actions:
+
         name = action.dest
         type_ = _determine_type(data_inputs, name, action.type)
         argument = action.option_strings[0]
 
+        update_name_map(name, name_map, reserved_names)
         # these actions are of hidden type, and they contain the container
         # field. This field contains the information about their groups.
+        # currently, only two level hierarchies are supported
         section = action.container.title
-
+        update_name_map(section, section_map, reserved_names)
         default_val = action.default
 
         help_ = action.help
@@ -82,12 +94,22 @@ def extract_useful_info_from_parser(parser: ArgumentParser,
         choices = action.choices
         is_flag = action.type is None
 
-        params.append(ParamInfo(type_, name, argument, name, section,
+        params.append(ParamInfo(type_, name_map[name], argument, name,
+                                section_map[section], section,
                                 default_val, help_,
                                 optional, is_repeat, is_select, choices,
                                 is_flag))
 
     return params
+
+
+def update_name_map(name, name_map, reserved_names):
+    name_map[name] = name
+    # very unlikely name match will happen for the generated string,
+    # but it can happen,
+    # easily fixable by loop
+    if name.lower() in reserved_names:
+        name_map[name] = name + str(uuid.uuid4())[:4]
 
 
 def _determine_type(data_inputs, name, type_):

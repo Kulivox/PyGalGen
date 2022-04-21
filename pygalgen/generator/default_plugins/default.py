@@ -1,3 +1,5 @@
+from os import path
+
 from pygalgen.generator.default_plugins.strategies.help import HelpStrategy
 from pygalgen.generator.pluggability.data_setup import DataSetup
 from pygalgen.generator.pluggability.plugin import Plugin
@@ -18,8 +20,12 @@ class DefaultPlugin(Plugin):
         return DefaultDataSetup(args, self.assets_path)
 
     def get_strategies(self, args, macros):
+        with open(path.join(self.assets_path, "reserved_var_names.txt")) as f:
+            reserved_names = set((name for name in f.readlines()))
+
         return [HeaderStrategy(args, macros),
-                DefaultParams(args, macros),
+                DefaultParams(args, macros,
+                              reserved_names),
                 CommandsStrategy(args, macros),
                 HelpStrategy(args, macros)]
 

@@ -20,10 +20,10 @@ def create_param(parent: ET.Element, argument_attr: str, type_attr: str,
 
     return ET.SubElement(parent, "param", attributes)
 
-def create_section(parent: ET.Element, title: str, expanded: bool,
+def create_section(parent: ET.Element, name: str, title: str, expanded: bool,
                    help_: Optional[str] = None):
     attributes = {
-        "name": title.lower().replace(" ", "_"),
+        "name": name.lower().replace(" ", "_"),
         "title": title,
         "expanded": str(expanded).lower()
     }
