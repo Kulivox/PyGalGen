@@ -1,5 +1,7 @@
 from typing import Any, Iterable, Set
 import lxml.etree as ET
+
+from pygalgen.generator.common.utils import parse_argument_comma_sep_list
 from pygalgen.generator.pluggability.strategy import Strategy, StrategyStage
 from pygalgen.generator.common.params.argument_parser_conversion import \
     obtain_and_convert_parser, extract_useful_info_from_parser
@@ -19,10 +21,12 @@ class DefaultParams(Strategy):
         inputs = xml_output.find(".//inputs")
 
         parser = obtain_and_convert_parser(file_path)
-        data_inputs = set(item for item in self.args.inputs.split(","))
+        data_inputs = {prm: fmt for prm, fmt in
+                       parse_argument_comma_sep_list(self.args.inputs)}
 
-        param_info = extract_useful_info_from_parser(parser, data_inputs,
-                                                     self.reserved_names)
+        param_info, name_map = extract_useful_info_from_parser(parser,
+                                                               data_inputs,
+                                                               self.reserved_names)
 
         sections = {}
         for param in param_info:
@@ -36,9 +40,16 @@ class DefaultParams(Strategy):
             if param.is_repeat:
                 curr_root = xu.create_repeat(curr_root, param.name + "_repeat")
 
-            curr_root = xu.create_param(curr_root, param.attribute,
-                                        param.type, param.optional,
-                                        param.label, param.help)
+            if name_map[param.name] in data_inputs:
+                curr_root = xu.create_param(curr_root, param.argument,
+                                            param.type, param.optional,
+                                            param.label, param.help,
+                                            format_attr=data_inputs[
+                                                name_map[param.name]])
+            else:
+                curr_root = xu.create_param(curr_root, param.argument,
+                                            param.type, param.optional,
+                                            param.label, param.help)
 
             if param.is_select:
                 for choice in param.choices:

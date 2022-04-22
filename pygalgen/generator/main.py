@@ -9,47 +9,15 @@ import importlib.resources as res
 def define_default_params():
     parser = argparse.ArgumentParser("Command parser")
     default = parser.add_argument_group("Default program parameters")
-    default.add_argument("--package-name", required=True, type=str,
-                         help="Name of the package for which you are "
-                              "creating the tool definition file")
-
-    default.add_argument("--package-version", type=str, required=True,
-                         help="Version of the package")
 
     default.add_argument("--path",
                          help="Path to the source file",
                          required=True)
 
-    default.add_argument("--update", type=str, required=False,
-                         help="Value of this argument is path to previously "
-                              "generated or created tool wrapper file. If "
-                              "this parameter is set Pygalgen generates new "
-                              "wrapper file, compares it withe the old one "
-                              "and creates output file containing the old, "
-                              "updated, and new definitions. It also notifies "
-                              "the user about updates by appending magic "
-                              "string to all of the them,"
-                              " so they are not missed")
-
-    # FIXME: currently not supported, complicates things too much
-    # default.add_argument("--bundle", action="store_true", default=False,
-    #                      help="If this argument is set, argument '--path' "
-    #                           "will point to root directory of tool bundle "
-    #                           "you want to parse")
-    # default.add_argument("--tool-name-map", required=False, type=str,
-    #                      default="",
-    #                      help="Comma separated list of file names and tool "
-    #                           "names, used in tool discovery if '--bundle' "
-    #                          "param is set. Format: file_name:tool_name,...")
-
-    default.add_argument("--inputs", type=str,
-                         help="Comma separated list of names and format types"
-                              "of program arguments that define inputs."
-                              "(name:format,name:format) For example, "
-                              "if your program accepts path to vcf "
-                              "file in argument called input, enter "
-                              "'input:vcf'",
-                         default="")
+    default.add_argument("--tool-name", required=True, type=str,
+                                help="Name of the package for which you "
+                                     "are "
+                                     "creating the tool definition file")
 
     logging_grp = parser.add_argument_group("Logging arguments")
 

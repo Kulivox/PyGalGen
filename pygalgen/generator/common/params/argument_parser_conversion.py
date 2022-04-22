@@ -13,7 +13,7 @@ from pygalgen.generator.common.source_file_parsing.local_module_parsing import \
 from pygalgen.generator.common.source_file_parsing.parsing_exceptions import \
     ArgumentParsingDiscoveryError
 
-from typing import Optional, Set, Any, List
+from typing import Optional, Set, Any, List, Dict, Tuple
 from argparse import ArgumentParser
 import dataclasses
 
@@ -24,7 +24,7 @@ from pygalgen.common.utils import LINTER_MAGIC
 class ParamInfo:
     type: str
     name: str
-    attribute: str
+    argument: str
     label: str
     section: str
     section_label:str
@@ -69,7 +69,9 @@ def obtain_and_convert_parser(path: str) -> Optional[ArgumentParser]:
 
 
 def extract_useful_info_from_parser(parser: ArgumentParser,
-                                    data_inputs: Set[str], reserved_names: Set[str]) -> List[ParamInfo]:
+                                    data_inputs: Dict[str, str],
+                                    reserved_names: Set[str])\
+        -> Tuple[List[ParamInfo], Dict[str, str]]:
     params = []
     name_map = dict()
     section_map = dict()
@@ -100,10 +102,11 @@ def extract_useful_info_from_parser(parser: ArgumentParser,
                                 optional, is_repeat, is_select, choices,
                                 is_flag))
 
-    return params
+    return params, {new: old for old, new in name_map.items()}
 
 
-def update_name_map(name, name_map, reserved_names):
+def update_name_map(name: str, name_map: Dict[str, str],
+                    reserved_names: Set[str]):
     name_map[name] = name
     # very unlikely name match will happen for the generated string,
     # but it can happen,
@@ -112,7 +115,7 @@ def update_name_map(name, name_map, reserved_names):
         name_map[name] = name + str(uuid.uuid4())[:4]
 
 
-def _determine_type(data_inputs, name, type_):
+def _determine_type(data_inputs: Dict[str, str], name: str, type_):
     if type_ is None or type_ == bool:
         type_ = "boolean"
     elif type_ == int:

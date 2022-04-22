@@ -4,7 +4,8 @@ from pygalgen.generator.default_plugins.strategies.help import HelpStrategy
 from pygalgen.generator.pluggability.data_setup import DataSetup
 from pygalgen.generator.pluggability.plugin import Plugin
 from pygalgen.generator.default_plugins.strategies.params import DefaultParams
-from pygalgen.generator.default_plugins.strategies.commands import CommandsStrategy
+from pygalgen.generator.default_plugins.strategies.commands import \
+    CommandsStrategy
 from pygalgen.generator.default_plugins.data_setup import DefaultDataSetup
 from pygalgen.generator.default_plugins.strategies.header import HeaderStrategy
 
@@ -40,3 +41,29 @@ class DefaultPlugin(Plugin):
 
         default_plugin.add_argument("--galaxy-profile", required=False,
                                     type=str, help="Version of galaxy profile")
+
+        default_plugin.add_argument("--descr", required=True,
+                                    type=str, help="Description of the tool")
+
+
+        default_plugin.add_argument("--requirements", required=True, type=str,
+                                    help="Comma separated list of "
+                                         "package:version pairs")
+
+        default_plugin.add_argument("--tool-version", type=str,
+                                    required=True,
+                                    help="Version of the tool")
+
+        default_plugin.add_argument("--inputs", type=str,
+                                    help="Comma separated list of names and "
+                                         "format types "
+                                         "of program arguments that define "
+                                         "inputs. "
+                                         "(name:format,name:format) For "
+                                         "example, "
+                                         "if your program accepts path to vcf "
+                                         "file in argument called input, "
+                                         "enter "
+                                         "'input:vcf'",
+                                    default="")
+

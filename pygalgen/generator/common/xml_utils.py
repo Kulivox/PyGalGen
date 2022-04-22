@@ -2,6 +2,7 @@ from typing import List, Tuple, Dict, Optional
 import lxml.etree as ET
 import re
 
+
 def create_param(parent: ET.Element, argument_attr: str, type_attr: str,
                  optional_attr: bool, label_attr: str,
                  help_attr: Optional[str] = None,
@@ -9,17 +10,20 @@ def create_param(parent: ET.Element, argument_attr: str, type_attr: str,
     attributes = {
         "argument": argument_attr,
         "type": type_attr,
+        "format": format_attr,
         "optional": str(optional_attr).lower(),
         "label": label_attr
     }
 
     if help_attr is not None:
         attributes["help"] = help_attr
+    # this might seem weird but it is done like this for correct order
+    # of attributes
+    if format_attr is None:
+        attributes.pop("format")
 
-    if format_attr is not None:
-        attributes["format"] = format_attr
+    return create_element(parent, "param", attributes)
 
-    return ET.SubElement(parent, "param", attributes)
 
 def create_section(parent: ET.Element, name: str, title: str, expanded: bool,
                    help_: Optional[str] = None):
@@ -32,7 +36,7 @@ def create_section(parent: ET.Element, name: str, title: str, expanded: bool,
     if help_ is not None:
         attributes["help"] = help_
 
-    return ET.SubElement(parent, "section", attributes)
+    return create_element(parent, "section", attributes)
 
 
 def create_repeat(parent: ET.Element, title: str,
@@ -54,13 +58,24 @@ def create_repeat(parent: ET.Element, title: str,
         if attributes[name] is None:
             attributes.pop(name)
 
-    return ET.SubElement(parent, "repeat", attributes)
+    return create_element(parent, "repeat", attributes)
+
 
 def create_option(parent: ET.Element, value: str, text: str):
     attrs = {
         "value": value
     }
 
-    element = ET.SubElement(parent, "option", attrs)
-    element.text = text
-    return element
+    return create_element(parent, "option", attrs, text)
+
+
+def create_element(parent: ET.Element, tag: str, attribs: dict[str, str],
+                   body: Optional[str] = None, pos: int = -1):
+    if pos == -1:
+        elem = ET.SubElement(parent, tag, attribs)
+    else:
+        elem = ET.Element(tag, attribs)
+        parent.insert(pos, elem)
+
+    elem.text = body
+    return elem

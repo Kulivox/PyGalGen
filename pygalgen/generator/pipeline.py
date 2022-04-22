@@ -67,9 +67,9 @@ class PipelineExecutor:
             for strategy in strategies:
                 xml_tree = strategy.apply_strategy(xml_tree,
                                                    parsed_args.path,
-                                                   parsed_args.package_name)
+                                                   parsed_args.tool_name)
 
-        self._write_output([(xml_tree, parsed_args.package_name)])
+        self._write_output([(xml_tree, parsed_args.tool_name)])
 
         return 0
 

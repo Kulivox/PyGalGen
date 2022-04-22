@@ -2,6 +2,7 @@ from typing import Any
 
 import lxml.etree as ET
 
+from pygalgen.generator.common.xml_utils import create_element
 from pygalgen.generator.pluggability.strategy import Strategy, StrategyStage
 from pygalgen.generator.common.macros.macros import Macros
 
@@ -36,5 +37,9 @@ class HeaderStrategy(Strategy):
         requirements.getparent().remove(requirements)
 
         root.insert(0, self.create_macros_import())
-        root.insert(1, self.expand_requirements())
+        create_element(root, "description", dict(), self.args.descr, pos=1)
+        root.insert(2, self.expand_requirements())
+
+
+
         return xml_output

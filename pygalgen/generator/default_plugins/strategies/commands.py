@@ -10,7 +10,7 @@ class CommandsStrategy(Strategy):
 
     def apply_strategy(self, xml_output: ET.ElementTree, file_name: str,
                        module_name: str) -> ET.ElementTree:
-        tool_name = f"{self.args.package_name}\n"
+        tool_name = f"{self.args.tool_name}\n"
         inputs_body = xml_output.getroot().findall(".//inputs/*")
         results = [tool_name]
         results += self.extract_command(inputs_body)
