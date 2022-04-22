@@ -36,8 +36,9 @@ class HeaderStrategy(Strategy):
         requirements = root.find(".//requirements")
         requirements.getparent().remove(requirements)
 
-        root.insert(0, self.create_macros_import())
-        create_element(root, "description", dict(), self.args.descr, pos=1)
+        create_element(root, "description", dict(), self.args.descr, pos=0)
+        root.insert(1, self.create_macros_import())
+
         root.insert(2, self.expand_requirements())
 
 
