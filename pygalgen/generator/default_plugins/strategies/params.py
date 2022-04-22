@@ -20,8 +20,10 @@ class DefaultParams(Strategy):
         inputs = xml_output.find(".//inputs")
 
         parser = obtain_and_convert_parser(self.args.path)
-        data_inputs = {prm: fmt for prm, fmt in
-                       parse_argument_comma_sep_list(self.args.inputs)}
+        data_inputs = dict()
+        if self.args.inputs:
+            data_inputs = {prm: fmt for prm, fmt in
+                           parse_argument_comma_sep_list(self.args.inputs)}
 
         param_info, name_map = extract_useful_info_from_parser(parser,
                                                                data_inputs,

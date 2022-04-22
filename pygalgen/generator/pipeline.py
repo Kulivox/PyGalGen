@@ -59,6 +59,7 @@ class PipelineExecutor:
 
         # plugins are applied one by one, according to their defined order
         for plugin in plugins:
+            logging.info(f"Applying {plugin.name}")
             # strategies are than sorted and can be iteratively applied
             strategies = sorted(plugin.get_strategies(parsed_args, macros))
             if not strategies:

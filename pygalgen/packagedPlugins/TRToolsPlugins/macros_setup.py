@@ -1,7 +1,7 @@
 import os
 from typing import Any
 
-from lxml.etree import ElementTree
+import lxml.etree as ET
 
 from pygalgen.generator.common.macros.macros import MacrosFactory
 from pygalgen.generator.pluggability.data_setup import DataSetup
@@ -13,7 +13,7 @@ class MacrosSetup(DataSetup):
         super().__init__(args)
         self.assets_path = assets
 
-    def initialize_xml_tree(self, xml_tree: ElementTree) -> ElementTree:
+    def initialize_xml_tree(self, xml_tree: ET.ElementTree) -> ET.ElementTree:
         return xml_tree
 
     def initialize_macros(self,
@@ -21,6 +21,12 @@ class MacrosSetup(DataSetup):
         with open(
                 os.path.join(self.assets_path, "index_function.cheetah")) as f:
             macros_factory.add_token("INDEX_VCFS", str(f.read()), cdata=True)
-            macros_factory.add_requirement("samtools", "1.14")
+
+        macros_factory.add_requirement("samtools", "1.14")
+
+        options = ET.parse(os.path.join(self.assets_path, "genotypers.xml"))\
+            .getroot()
+
+        macros_factory.add_xml_import("vcfTypes", options[:])
 
         return macros_factory

@@ -5,6 +5,7 @@ from pygalgen.generator.pluggability.data_setup import DataSetup
 from pygalgen.generator.pluggability.plugin import Plugin
 from pygalgen.generator.pluggability.strategy import Strategy
 from Strategies.citations import Citations
+from Strategies.params import TRToolsParams
 from macros_setup import MacrosSetup
 
 
@@ -19,7 +20,7 @@ class TRToolsPlugin(Plugin):
                                 "bibtex format")
 
     def get_strategies(self, args: Any, macros: Macros) -> List[Strategy]:
-        return [Citations(args, macros)]
+        return [Citations(args, macros), TRToolsParams(args, macros)]
 
     def get_data_setup(self, args: Any) -> DataSetup:
         return MacrosSetup(args, self.assets_path)

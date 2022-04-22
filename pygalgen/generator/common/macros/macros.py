@@ -22,13 +22,13 @@ class MacrosFactory:
         self.tokens[token_name] = value, cdata
         return token_name
 
-    def add_xml_import(self, name: str, value: ET.Element):
+    def add_xml_import(self, name: str, value: list[ET.Element]):
         self.imports[name] = value
 
     def add_requirement(self, name: str, version: str, type_: str = "package"):
         node = \
             self.imports.setdefault("requirements",
-                                    ET.Element("requirements"))
+                                    [ET.Element("requirements")])[0]
 
         elem = ET.SubElement(node, "requirement",
                              {"type": type_, "version": version})
@@ -41,7 +41,7 @@ class MacrosFactory:
 @dataclass
 class Macros:
     tokens: dict[str, Tuple[str, bool]]
-    xml_imports: dict[str, ET.Element]
+    xml_imports: dict[str, list[ET.Element]]
 
     def generate_xml(self) -> ET.Element:
         root = ET.Element("macros")
@@ -50,9 +50,9 @@ class Macros:
             text = value if not cdata else ET.CDATA(value)
             sub_element.text = text
 
-        for name, element in self.xml_imports.items():
+        for name, elements in self.xml_imports.items():
             sub_element = ET.SubElement(root, "xml", {"name": name})
-            sub_element.append(element)
+            sub_element.extend(elements)
 
         return root
 

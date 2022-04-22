@@ -1,0 +1,9 @@
+<!--This enclosing tag is here to make it parsable-->
+<options>
+    <option value="auto">Auto</option>
+    <option value="gangstr">GangSTR</option>
+    <option value="advntr">Advntr</option>
+    <option value="hipstr">HipSTR</option>
+    <option value="eh">Expansion hunter</option>
+    <option value="popstr">PopSTR</option>
+</options>

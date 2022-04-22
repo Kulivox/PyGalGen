@@ -79,3 +79,9 @@ def create_element(parent: ET.Element, tag: str, attribs: dict[str, str],
 
     elem.text = body
     return elem
+
+
+def find_elements_by_name_attrib(tag: str, name: str, root: ET.Element) \
+        -> List[ET.Element]:
+    return root.xpath(f'.//{tag}[contains(@name, "{name}")] |'
+                      f'.//{tag}[contains(@argument, "{name}")]')
