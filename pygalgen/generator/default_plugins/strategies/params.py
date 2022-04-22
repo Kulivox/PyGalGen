@@ -16,11 +16,10 @@ class DefaultParams(Strategy):
         super(DefaultParams, self).__init__(args, macros, self.STAGE)
         self.reserved_names = reserved_names
 
-    def apply_strategy(self, xml_output: ET.ElementTree, file_path: str,
-                       module_name: str) -> ET.ElementTree:
+    def apply_strategy(self, xml_output: ET.ElementTree) -> ET.ElementTree:
         inputs = xml_output.find(".//inputs")
 
-        parser = obtain_and_convert_parser(file_path)
+        parser = obtain_and_convert_parser(self.args.path)
         data_inputs = {prm: fmt for prm, fmt in
                        parse_argument_comma_sep_list(self.args.inputs)}
 

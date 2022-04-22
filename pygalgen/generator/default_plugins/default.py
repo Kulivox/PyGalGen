@@ -1,6 +1,8 @@
 from os import path
 
 from pygalgen.generator.default_plugins.strategies.help import HelpStrategy
+from pygalgen.generator.default_plugins.strategies.outputs import \
+    DefaultOutputs
 from pygalgen.generator.pluggability.data_setup import DataSetup
 from pygalgen.generator.pluggability.plugin import Plugin
 from pygalgen.generator.default_plugins.strategies.params import DefaultParams
@@ -28,7 +30,7 @@ class DefaultPlugin(Plugin):
                 DefaultParams(args, macros,
                               reserved_names),
                 CommandsStrategy(args, macros),
-                HelpStrategy(args, macros)]
+                HelpStrategy(args, macros), DefaultOutputs(args, macros)]
 
     def add_custom_params(self, params: ArgumentParser):
         default_plugin = params.add_argument_group("Default plugin")

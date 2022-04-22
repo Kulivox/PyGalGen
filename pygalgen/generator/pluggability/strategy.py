@@ -38,8 +38,7 @@ class Strategy(ABC):
 
     # applies strategy to xml_output and than returns this modified output
     @abstractmethod
-    def apply_strategy(self, xml_output: ElementTree, file_path: str,
-                       module_name: str)\
+    def apply_strategy(self, xml_output: ElementTree)\
             -> Any:
         pass
 

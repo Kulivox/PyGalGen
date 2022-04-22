@@ -13,8 +13,7 @@ class Citations(Strategy):
     def __init__(self, args: Any, macros: Macros):
         super().__init__(args, macros, self.STAGE)
 
-    def apply_strategy(self, xml_output: ElementTree, file_path: str,
-                       module_name: str) -> Any:
+    def apply_strategy(self, xml_output: ElementTree) -> Any:
         citations = xml_output.find(".//citations")
         if citations is None:
             citations = ET.SubElement(xml_output.getroot(), "citations")

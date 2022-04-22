@@ -55,6 +55,7 @@ class PipelineExecutor:
 
         macros = mf.create_macros()
         macros.write_xml("macros.xml")
+        logging.info("Created macros.xml")
 
         # plugins are applied one by one, according to their defined order
         for plugin in plugins:
@@ -65,9 +66,7 @@ class PipelineExecutor:
                                 f" {plugin.name}")
 
             for strategy in strategies:
-                xml_tree = strategy.apply_strategy(xml_tree,
-                                                   parsed_args.path,
-                                                   parsed_args.tool_name)
+                xml_tree = strategy.apply_strategy(xml_tree)
 
         self._write_output([(xml_tree, parsed_args.tool_name)])
 

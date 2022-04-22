@@ -25,11 +25,11 @@ class HeaderStrategy(Strategy):
         expand = ET.Element("expand", {"macro": "requirements"})
         return expand
 
-    def apply_strategy(self, xml_output: ET.ElementTree,
-                       file_path: str, module_name: str) -> Any:
+    def apply_strategy(self, xml_output: ET.ElementTree) -> Any:
         root = xml_output.getroot()
-        root.attrib["id"] = module_name
-        root.attrib["name"] = module_name
+        root.attrib["id"] = self.args.tool_name
+        root.attrib["name"] = self.args.tool_name[0].upper() +\
+                              self.args.tool_name[1:]
         root.attrib["version"] = self. \
             macros.get_real_token_name("tool_version")
 

@@ -21,5 +21,6 @@ class MacrosSetup(DataSetup):
         with open(
                 os.path.join(self.assets_path, "index_function.cheetah")) as f:
             macros_factory.add_token("INDEX_VCFS", str(f.read()), cdata=True)
+            macros_factory.add_requirement("samtools", "1.14")
 
         return macros_factory

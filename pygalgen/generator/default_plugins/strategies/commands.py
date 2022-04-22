@@ -8,15 +8,14 @@ class CommandsStrategy(Strategy):
     def __init__(self, args: Any, macros):
         super().__init__(args, macros, self.STAGE)
 
-    def apply_strategy(self, xml_output: ET.ElementTree, file_name: str,
-                       module_name: str) -> ET.ElementTree:
+    def apply_strategy(self, xml_output: ET.ElementTree) -> ET.ElementTree:
         tool_name = f"{self.args.tool_name}\n"
         inputs_body = xml_output.getroot().findall(".//inputs/*")
         results = [tool_name]
         results += self.extract_command(inputs_body)
 
         if not self.args.dont_redirect_output:
-            results.append("1> stdout.txt 2>stderr.txt\n")
+            results.append("1>$stdout 2>$stderr\n")
 
         command = "".join(results)
 
