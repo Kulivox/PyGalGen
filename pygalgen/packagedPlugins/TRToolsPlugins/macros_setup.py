@@ -10,7 +10,7 @@ from pygalgen.generator.pluggability.strategy import ProcessingOrder
 
 class MacrosSetup(DataSetup):
     def __init__(self, args: Any, assets: str):
-        super().__init__(args, ProcessingOrder.AFTER_DEFAULT)
+        super().__init__(args)
         self.assets_path = assets
 
     def initialize_xml_tree(self, xml_tree: ElementTree) -> ElementTree:

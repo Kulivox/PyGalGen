@@ -69,7 +69,8 @@ def load_plugin(configuration: dict[str, Any], plugin_dir: str) -> Plugin:
     if "assets" in plugin_dct and plugin_dct["assets"] is not None:
         assets_path = os.path.join(plugin_dir, plugin_dct["assets"])
 
-    return classes[0](assets_path)
+    return classes[0](plugin_dct.get("order", 0), plugin_dct["name"],
+                      assets_path)
 
 
 def discover_plugins(path: Union[str, Traversable]):

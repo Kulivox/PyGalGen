@@ -9,8 +9,8 @@ from macros_setup import MacrosSetup
 
 
 class TRToolsPlugin(Plugin):
-    def __init__(self, assets_path: str):
-        super().__init__(assets_path)
+    def __init__(self, order: int, name: str, assets_path: str):
+        super().__init__(order, name, assets_path)
 
     def add_custom_params(self, params: argparse.ArgumentParser):
         group = params.add_argument_group("TRTools plugin")

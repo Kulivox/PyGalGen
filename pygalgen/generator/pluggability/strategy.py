@@ -28,7 +28,7 @@ class StrategyStage(Enum):
 
 class Strategy(ABC):
     def __init__(self, args: Any, macros: Macros, stage: StrategyStage,
-                 stage_order: ProcessingOrder = ProcessingOrder.AFTER_DEFAULT,
+                 stage_order: ProcessingOrder = ProcessingOrder.DEFAULT,
                  manual_order: int = 0):
         self.args = args
         self.stage = stage
@@ -58,7 +58,7 @@ class Strategy(ABC):
 
         raise RuntimeError(f"{self.__class__.__name__} and"
                            f" {other.__class__.__name__} have"
-                           f" the same sort order"
+                           f" the same sort order within plugin"
                            f" {self.stage_order}:{self.stage_order}"
                            f":{self.manual_order}\n"
                            f"This is not allowed.")

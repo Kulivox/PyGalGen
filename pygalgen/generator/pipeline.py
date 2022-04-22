@@ -37,11 +37,13 @@ class PipelineExecutor:
         if parsed_args.debug:
             set_logging_settings(format_, level=logging.DEBUG)
 
-        # prepare data preparation plugins
+        plugins.sort()
+
+        # prepare data preparation from plugins
         data_init = list(filter(lambda init: init is not None,
-                                (plg.get_data_setup(parsed_args)
-                                 for plg in plugins if plg is not None)))
-        data_init.sort()
+                                       (plg.get_data_setup(parsed_args)
+                                        for plg in plugins if
+                                        plg is not None)))
 
         xml_tree = ET.ElementTree()
         mf = MacrosFactory()
@@ -54,34 +56,22 @@ class PipelineExecutor:
         macros = mf.create_macros()
         macros.write_xml("macros.xml")
 
-        strategies = []
-        for plugin_strategies in [plugin.get_strategies(parsed_args, macros)
-                                  for plugin in plugins]:
-            strategies += plugin_strategies
+        # plugins are applied one by one, according to their defined order
+        for plugin in plugins:
+            # strategies are than sorted and can be iteratively applied
+            strategies = sorted(plugin.get_strategies(parsed_args, macros))
+            if not strategies:
+                logging.warning(f"No strategies were loaded in plugin"
+                                f" {plugin.name}")
 
-        # strategies are than sorted and can be iteratively applied
-        strategies.sort()
-        result = []
-
-        if not strategies:
-            logging.warning("No strategies were loaded")
-            return 0
-
-        for path, tool_name in self._provide_file_and_tool_name(parsed_args):
-            current_tree = copy.deepcopy(xml_tree)
             for strategy in strategies:
-                current_tree = strategy.apply_strategy(current_tree, path,
-                                                       tool_name)
-            result.append((current_tree, tool_name))
+                xml_tree = strategy.apply_strategy(xml_tree,
+                                                   parsed_args.path,
+                                                   parsed_args.package_name)
 
-        self._write_output(result)
+        self._write_output([(xml_tree, parsed_args.package_name)])
 
         return 0
-
-    @staticmethod
-    def _provide_file_and_tool_name(args: Any):
-        yield args.path, args.package_name
-        return
 
     # this method is currently not used because handling whole bundles
     # creates additional overhead. Currently, the only supported method of

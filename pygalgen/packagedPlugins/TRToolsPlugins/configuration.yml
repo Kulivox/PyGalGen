@@ -1,5 +1,6 @@
 plugin:
   name: TRTools Plugin
+  order: 1
   requirements:
     - lxml
   path: trtoolsPlugin.py

@@ -1,5 +1,7 @@
 plugin:
   name: Default Plugin
+  # order of plugin is by default 0, this definition is here is just for clarity
+  order: 0
   requirements:
     - lxml
   path: default.py

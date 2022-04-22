@@ -13,8 +13,8 @@ from typing import Any
 
 
 class DefaultPlugin(Plugin):
-    def __init__(self, assets_path: str):
-        super().__init__(assets_path)
+    def __init__(self, order: int, name: str, assets_path: str):
+        super().__init__(order, name, assets_path)
 
     def get_data_setup(self, args: Any) -> DataSetup:
         return DefaultDataSetup(args, self.assets_path)

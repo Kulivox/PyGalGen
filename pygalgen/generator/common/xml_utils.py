@@ -1,5 +1,6 @@
 from typing import List, Tuple, Dict, Optional
 import lxml.etree as ET
+import re
 
 def create_param(parent: ET.Element, argument_attr: str, type_attr: str,
                  optional_attr: bool, label_attr: str,
@@ -23,7 +24,7 @@ def create_param(parent: ET.Element, argument_attr: str, type_attr: str,
 def create_section(parent: ET.Element, name: str, title: str, expanded: bool,
                    help_: Optional[str] = None):
     attributes = {
-        "name": name.lower().replace(" ", "_"),
+        "name": re.sub("[/\\-* ()]", "_", name).lower(),
         "title": title,
         "expanded": str(expanded).lower()
     }
