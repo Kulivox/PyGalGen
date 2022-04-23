@@ -22,6 +22,7 @@ class StrategyStage(Enum):
     TESTS = 5
     HELP = 6
     CITATIONS = 7
+    POST_PROCESSING = 8
 
     def __lt__(self, other):
         return self.value < other.value
