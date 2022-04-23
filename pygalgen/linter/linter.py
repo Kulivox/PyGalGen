@@ -4,7 +4,18 @@ import lxml.etree as ET
 from pygalgen.common.utils import LINTER_MAGIC
 
 
-def magic_found(element: ET.Element):
+def magic_found(element: ET.Element) -> bool:
+    """
+    Function reports whether current element contains magic tag
+
+    Parameters
+    ----------
+    element : current XML element
+
+    Returns
+    -------
+    True if magic was found, otherwise False
+    """
     if LINTER_MAGIC in element.tag:
         return True
 
@@ -18,6 +29,15 @@ def magic_found(element: ET.Element):
 
 
 def report_problems(element: ET.Element):
+    """
+    This function recursively goes through entire xml tree
+    and prints out lines of elements containing problems.
+    Problematic elements contain magic strings
+
+    Parameters
+    ----------
+    element: xml element that is currently being checked
+    """
     if magic_found(element):
         print(f"Problem found at line {element.sourceline}")
 
@@ -33,8 +53,6 @@ def run():
 
     tree = ET.parse(args.path)
     report_problems(tree.getroot())
-
-    return 0
 
 
 if __name__ == '__main__':
