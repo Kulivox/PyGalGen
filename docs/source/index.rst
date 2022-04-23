@@ -7,15 +7,9 @@ Welcome to PyGalGen's documentation!
 ====================================
 .. autosummary::
    :toctree: _autosummary
-   :template: custom-module-template.rst
    :recursive:
 
    pygalgen
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
 
 
 Indices and tables
