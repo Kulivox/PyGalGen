@@ -7,14 +7,17 @@
    :hidden:
 
    modules
+   developerGuide
+   userGuide
 
 PyGalGen
 ========
 
-PyGalGen is generator for Galaxy tool definition files. 
-This documentation provides user and developer guides, along with documentation.
+PyGalGen is generator for Galaxy tool definition files. It supports custom plugins, and tool
+developers are encouraged to create their own plugins for their specific needs.
+This page provides user and developer guides, along with documentation.
 
-PyGalGen
+Features
 --------
 
 - Generate large parts of the wrapper file from the source code itself
