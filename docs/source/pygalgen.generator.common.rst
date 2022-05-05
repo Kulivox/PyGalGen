@@ -1,6 +1,11 @@
 pygalgen.generator.common package
 =================================
 
+.. automodule:: pygalgen.generator.common
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -35,14 +40,6 @@ pygalgen.generator.common.xml\_utils module
 -------------------------------------------
 
 .. automodule:: pygalgen.generator.common.xml_utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: pygalgen.generator.common
    :members:
    :undoc-members:
    :show-inheritance:

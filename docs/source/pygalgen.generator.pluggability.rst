@@ -1,6 +1,11 @@
 pygalgen.generator.pluggability package
 =======================================
 
+.. automodule:: pygalgen.generator.pluggability
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -24,14 +29,6 @@ pygalgen.generator.pluggability.strategy module
 -----------------------------------------------
 
 .. automodule:: pygalgen.generator.pluggability.strategy
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: pygalgen.generator.pluggability
    :members:
    :undoc-members:
    :show-inheritance:

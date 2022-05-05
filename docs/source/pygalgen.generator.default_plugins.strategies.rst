@@ -1,6 +1,11 @@
 pygalgen.generator.default\_plugins.strategies package
 ======================================================
 
+.. automodule:: pygalgen.generator.default_plugins.strategies
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -40,14 +45,6 @@ pygalgen.generator.default\_plugins.strategies.params module
 ------------------------------------------------------------
 
 .. automodule:: pygalgen.generator.default_plugins.strategies.params
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: pygalgen.generator.default_plugins.strategies
    :members:
    :undoc-members:
    :show-inheritance:

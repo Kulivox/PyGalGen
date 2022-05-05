@@ -1,6 +1,11 @@
 pygalgen.generator.common.source\_file\_parsing package
 =======================================================
 
+.. automodule:: pygalgen.generator.common.source_file_parsing
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -40,14 +45,6 @@ pygalgen.generator.common.source\_file\_parsing.unknown\_names\_discovery module
 --------------------------------------------------------------------------------
 
 .. automodule:: pygalgen.generator.common.source_file_parsing.unknown_names_discovery
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: pygalgen.generator.common.source_file_parsing
    :members:
    :undoc-members:
    :show-inheritance:

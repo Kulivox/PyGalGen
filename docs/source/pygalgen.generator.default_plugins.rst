@@ -1,6 +1,11 @@
 pygalgen.generator.default\_plugins package
 ===========================================
 
+.. automodule:: pygalgen.generator.default_plugins
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -25,14 +30,6 @@ pygalgen.generator.default\_plugins.default module
 --------------------------------------------------
 
 .. automodule:: pygalgen.generator.default_plugins.default
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: pygalgen.generator.default_plugins
    :members:
    :undoc-members:
    :show-inheritance:

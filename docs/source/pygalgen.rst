@@ -1,6 +1,11 @@
 pygalgen package
 ================
 
+.. automodule:: pygalgen
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -10,11 +15,3 @@ Subpackages
    pygalgen.common
    pygalgen.generator
    pygalgen.linter
-
-Module contents
----------------
-
-.. automodule:: pygalgen
-   :members:
-   :undoc-members:
-   :show-inheritance:

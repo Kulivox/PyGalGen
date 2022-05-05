@@ -1,6 +1,11 @@
 pygalgen.generator package
 ==========================
 
+.. automodule:: pygalgen.generator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -42,14 +47,6 @@ pygalgen.generator.update module
 --------------------------------
 
 .. automodule:: pygalgen.generator.update
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: pygalgen.generator
    :members:
    :undoc-members:
    :show-inheritance:
