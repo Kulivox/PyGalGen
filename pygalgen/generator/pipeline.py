@@ -36,6 +36,8 @@ def set_logging_settings(fmt: str, level: int) -> None:
 
 class PipelineExecutor:
     """
+      Class responsible for executing plugin pipeline
+
       Attributes
       ----------
       args_parser : ArgumentParser

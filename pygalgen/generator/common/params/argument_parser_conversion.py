@@ -1,3 +1,8 @@
+"""
+Functions used to extract initialized ArgumentParser from target source code,
+and to transform it into easily usable ParamInfo class containing
+ all the necessary info for 'inputs' element initialization
+"""
 import ast
 import logging
 import uuid
@@ -22,6 +27,9 @@ from pygalgen.common.utils import LINTER_MAGIC
 
 @dataclasses.dataclass
 class ParamInfo:
+    """
+    Class containing data of a single extracted parameter
+    """
     type: str
     name: str
     argument: str
@@ -38,6 +46,19 @@ class ParamInfo:
 
 
 def obtain_and_convert_parser(path: str) -> Optional[ArgumentParser]:
+    """
+    Function parses python source code located at 'path',
+    extracts initialized argument parser from the source file and returns it
+
+    Parameters
+    ----------
+    path : str
+     path to the source file containing argument parser init
+
+    Returns
+    -------
+    Initialized argument parser, or None, in case error happened
+    """
     try:
         tree = create_module_tree(path)
     except FileNotFoundError:
@@ -72,6 +93,31 @@ def extract_useful_info_from_parser(parser: ArgumentParser,
                                     data_inputs: Dict[str, str],
                                     reserved_names: Set[str])\
         -> Tuple[List[ParamInfo], Dict[str, str]]:
+    """
+    Converts extracted argument parser object into tuple of Param info objects
+
+    It also renames parameters whose names are equal to
+    name in 'reserved_names' set
+
+    containing parsed out data of arguments, and dictionary mapping new names
+    of these arguments, compatible with galaxy wrappers, to the old names
+
+    Parameters
+    ----------
+    parser : ArgumentParser
+     extracted argument parser, initialized with possible command
+     line arguments of target tool
+    data_inputs : Dict[str, str]
+     dictionary mapping names of arguments which should be interpreted
+     as paths to input datasets
+    reserved_names : set of names reserved by Galaxy, parameters whose name
+     are equal to one of the names in reserved names must be renamed
+
+    Returns
+    -------
+    Parsed out data of arguments, and dictionary mapping new names
+    of these arguments, compatible with galaxy wrappers, to the old names
+    """
     params = []
     name_map = dict()
     section_map = dict()
@@ -107,8 +153,17 @@ def extract_useful_info_from_parser(parser: ArgumentParser,
 
 def update_name_map(name: str, name_map: Dict[str, str],
                     reserved_names: Set[str]):
+    """
+    Updates names that are equal to one of the values in 'reserved_names'
+
+    Parameters
+    ----------
+    name :
+    name_map :
+    reserved_names :
+    """
     name_map[name] = name
-    # very unlikely name match will happen for the generated string,
+    # WARNING very unlikely name match will happen for the generated string,
     # but it can happen,
     # easily fixable by loop
     if name.lower() in reserved_names:

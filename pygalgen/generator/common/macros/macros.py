@@ -1,3 +1,6 @@
+"""
+Module containing definitions of Macros, and MacrosFactory classes
+"""
 import lxml.etree as ET
 from dataclasses import dataclass
 from typing import Union, Tuple
@@ -8,6 +11,9 @@ def _transform_name_to_token_name(name: str):
 
 
 class MacrosFactory:
+    """
+    Factory class responsible for initialization and creation of Macros objects
+    """
     def __init__(self):
         self.tokens = {}
 
@@ -40,6 +46,9 @@ class MacrosFactory:
 
 @dataclass
 class Macros:
+    """
+    Class encapsulating the macros of Galaxy wrappers
+    """
     tokens: dict[str, Tuple[str, bool]]
     xml_imports: dict[str, list[ET.Element]]
 

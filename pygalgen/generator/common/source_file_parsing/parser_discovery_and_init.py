@@ -1,3 +1,7 @@
+"""
+Module responsible for discovery of import statements importing Argument parser
+and discovery of the statements initializing the parser itself
+"""
 import ast
 import sys
 from typing import Tuple, Optional, Any, Set, List
@@ -9,6 +13,9 @@ ARGUMENT_PARSER_CLASS_NAME = "ArgumentParser"
 
 
 class ImportDiscovery(Discovery):
+    """
+    Class responsible for discovery and extraction of import statements
+    """
     def __init__(self, actions: List[ast.AST]):
         super(ImportDiscovery, self).__init__(actions)
         self.argparse_module_alias: Optional[str] = None
@@ -60,6 +67,9 @@ class ImportDiscovery(Discovery):
 
 
 class ParserDiscovery(Discovery):
+    """
+    Class responsible for discovery of ArgumentParser creation and assignment
+    """
     class ParserRenameFinder(ast.NodeVisitor):
         def __init__(self, func_name: str):
             self.func_name = func_name
@@ -129,6 +139,10 @@ class ParserDiscovery(Discovery):
 # it works only if the group is assigned a name
 # (is created as a normal variable)
 class GroupDiscovery(Discovery):
+    """
+    Class responsible for discovery of statements that initialize argument
+    groups
+    """
     def __init__(self, actions: List[ast.AST], main_name: str):
         self.main_name = main_name
         self.groups = set()
@@ -162,6 +176,11 @@ class GroupDiscovery(Discovery):
 # parser and groups. IMPORTANT! it also renames parsers on which those calls
 # are called to ensure everything can be interpreted correctly
 class ArgumentCreationDiscovery(Discovery):
+    """
+    Class responsible for extraction of statements which initialize the input
+    arguments. It is able to extract function calls on the original parser,
+    and on the argument groups extracted by GroupDiscovery
+    """
     def __init__(self, actions: List[ast.AST], main_name: str,
                  groups: Set[str]):
         self.main_name = main_name
@@ -193,6 +212,20 @@ class ArgumentCreationDiscovery(Discovery):
 
 def get_parser_init_and_actions(source: ast.Module) -> \
         Tuple[List[ast.AST], str, Set[str]]:
+    """
+    Function used to extract necessary imports, parser and argument creation
+     function calls
+
+    Parameters
+    ----------
+    source : ast.Module
+     source file parsed into ATT
+
+    Returns
+    -------
+    List of extracted AST nodes, the main name of the parser and a set of
+    section names
+    """
     discovery_classes = [ImportDiscovery, ParserDiscovery,
                          GroupDiscovery, ArgumentCreationDiscovery]
 

@@ -1,3 +1,7 @@
+"""
+Module responsible for resolving assignments and constant list comprehensives
+used in argument parser
+"""
 import ast
 from typing import List, Tuple, Optional, Any, Dict
 from pygalgen.common.utils import LINTER_MAGIC
@@ -6,6 +10,17 @@ import logging
 
 
 class UnknownNamesRemoval(ast.NodeVisitor):
+    """
+    Node visitor used to load assignments and constant list comprehensions,
+    that are used to initialize argument parser
+
+    Attributes
+    ---
+    unknown: Set[str]
+     set of names that represent variables used in parser initialization,
+     that have not been resolved yet
+
+    """
     def __init__(self, unknown: set[str]):
         self.unknown = unknown
 
@@ -63,6 +78,22 @@ class UnknownNamesRemoval(ast.NodeVisitor):
 
 def handle_local_module_names(actions: List[ast.AST],
                               unknown_names: set[str]) -> ast.Module:
+    """
+    Function used to extract assignments and list comprehensions that use
+    constant data and are used in argument parser init
+
+    Parameters
+    ----------
+    actions : List[ast.AST]
+     list of actions extracted so far
+    unknown_names :
+     set of unknown names that have to be extracted
+
+    Returns
+    -------
+    Python module containing assignments and list comprehensions whose values
+    are based on constants
+    """
     module = ast.Module(body=actions, type_ignores=[])
     add_parents(module)
 

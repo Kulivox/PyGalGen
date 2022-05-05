@@ -1,3 +1,7 @@
+"""
+Module containing discovery classes used to find names
+(assignments to variables) that have not been extracted yet
+"""
 import ast
 from .parsing_commons import Discovery
 from typing import Tuple, List, Any, Set
@@ -6,6 +10,10 @@ import builtins
 
 
 class UnknownNamesDiscovery(Discovery):
+    """
+    Discovery class used to find names that have not been initialized yet but
+    are necessary for correct argument parser init
+    """
 
     def __init__(self, actions: List[ast.AST], known_names: Set[str]):
         super().__init__(actions)
@@ -35,6 +43,9 @@ class UnknownNamesDiscovery(Discovery):
 
 
 class UnknownNameInit(ast.NodeVisitor):
+    """
+    Class used to initialize unknown names
+    """
 
     def __init__(self, unknown_names: Set[str]):
         self.unknown_names = unknown_names
@@ -86,7 +97,26 @@ def _insert_into_actions(actions: List[ast.AST], assignments: List[ast.Assign],
 def initialize_variables_in_module(module_tree: ast.Module,
                                    parser_name: str,
                                    sections: Set[str],
-                                   actions: List[ast.AST]):
+                                   actions: List[ast.AST]) ->\
+        Tuple[List[ast.AST], Set[str]]:
+    """
+    Function used to initialize variables that have constant values
+
+    Parameters
+    ----------
+    module_tree : ast.Module
+     AST of the original source file
+    parser_name : str
+     default name of the parser
+    sections : Set[str]
+     set of section names
+    actions : List[ast.AST]
+     list of actions extracted so far
+
+    Returns
+    -------
+    List containing newly extracted actions and new unknown names
+    """
     builtin_names = [e for e in builtins.__dict__]
     lib_modules = sys.stdlib_module_names
 
