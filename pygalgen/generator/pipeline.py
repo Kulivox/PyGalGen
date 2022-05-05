@@ -1,3 +1,8 @@
+"""
+Pipeline module is responsible for creating execution pipeline,
+which transforms xml file initialized in data_init of first plugin
+and creates galaxy wrapper
+"""
 import os
 from typing import Any, List
 from pygalgen.generator.pluggability.plugin import Plugin
@@ -12,7 +17,17 @@ import copy
 # because logging.basicConfig() doesn't reset the settings, but adds a
 # logging handler to a list of handlers, this list of handlers has to be
 # cleaned up before changing logging configuration
-def set_logging_settings(fmt: str, level: int):
+def set_logging_settings(fmt: str, level: int) -> None:
+    """
+    Utility function for setting logging settings
+
+    Parameters
+    ----------
+    fmt : str
+     logger format
+    level : int
+     min logging level
+    """
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
 
@@ -20,11 +35,37 @@ def set_logging_settings(fmt: str, level: int):
 
 
 class PipelineExecutor:
+    """
+      Attributes
+      ----------
+      args_parser : ArgumentParser
+       arg parser object containing default program parameters.
+        The contents of parser are modified during pipeline execution
+
+      Methods
+      ---------
+      execute_pipeline(plugins: List[Plugin]) -> int
+        sorts plugins and executes their strategies, creates file containing
+        the wrapper
+    """
     def __init__(self, default_arg_parser: ArgumentParser):
         self.args_parser = default_arg_parser
 
     def execute_pipeline(self, plugins: List[Plugin]) -> int:
+        """
+        Method that executes plugins in correct order and creates resulting
+        wrapper. The wrapper is saved to the local directory, along with the
+        macros file
 
+        Parameters
+        ----------
+        plugins : List[Plugins]
+         list of plugins to execute
+
+        Returns
+        -------
+         0 if execution completed successfully, 1 in case of an error
+        """
         # initialize argument parser
         parsed_args = self._parse_args(plugins)
 

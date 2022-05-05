@@ -1,12 +1,26 @@
+"""
+Main module of PyGalGen generator, responsible for defining default program
+ arguments and program execution
+"""
 import argparse
 import sys
+from typing import List
+
 from pygalgen.generator.pipeline import PipelineExecutor
 from pygalgen.generator.plugin_discovery import discover_plugins
 import logging
 import pygalgen.generator.default_plugins
 import importlib.resources as res
 
-def define_default_params():
+def define_default_params() -> argparse.ArgumentParser:
+    """
+    Function creates argument parser and initializes default arguments
+
+    Returns
+    -------
+    parser : ArgumentParser
+     parser object initialized with default program arguments
+    """
     parser = argparse.ArgumentParser("Command parser")
     default = parser.add_argument_group("Default program parameters")
 
@@ -37,7 +51,19 @@ def define_default_params():
 # but it's necessary
 # to load plugins, plugin directory path has to be known, argument parsing of
 # argparse object happens after plugin loading. Because of this problem,
-def obtain_plugins_path(args):
+def obtain_plugins_path(args: List[str]) -> str:
+    """
+    Manually extracts --plugins-path from arguments. The manual extraction is
+    necessary, because this value is needed before argumenParser
+    can parse arguments
+    Parameters
+    ----------
+    args : List[str]
+
+    Returns
+    -------
+    Path to plugins directory
+    """
     for i, item in enumerate(args):
         if item == "--plugins-path" and i + 1 < len(args):
             return args[i + 1]
@@ -46,6 +72,16 @@ def obtain_plugins_path(args):
 
 
 def main(args):
+    """
+    Main function of PyGalGen generator
+    Parameters
+    ----------
+    args : list of command line arguments:
+
+    Returns
+    -------
+    Error code
+    """
     logging.basicConfig(level=logging.DEBUG)
 
     parser = define_default_params()
