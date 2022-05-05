@@ -1,3 +1,6 @@
+"""
+Module responsible for plugin discovery, configuration and initialization
+"""
 import importlib
 import importlib.util
 import pkgutil
@@ -6,7 +9,7 @@ import sys
 from importlib.abc import Traversable
 
 from pygalgen.generator.pluggability.plugin import Plugin
-from typing import Any, Union
+from typing import Any, Union, List
 import os
 import yaml
 import logging
@@ -16,12 +19,38 @@ class PluginDiscoveryException(Exception):
     pass
 
 
-def get_plugin_configuration(config_file_path) -> dict[str, Any]:
+def get_plugin_configuration(config_file_path: str) -> dict[str, Any]:
+    """
+
+    Parameters
+    ----------
+    config_file_path : str
+
+    Returns
+    -------
+    Dictionary containing parsed yml file
+
+    """
     with open(config_file_path, "r", encoding="utf-8") as file:
         return yaml.safe_load(file)
 
 
 def load_plugin(configuration: dict[str, Any], plugin_dir: str) -> Plugin:
+    """
+    The function initializes plugin based on provided configuration and path
+
+    Parameters
+    ----------
+    configuration : dict[str, Any]
+     parsed configuration yaml
+    plugin_dir : str
+     path to the root directory of plugin
+
+    Returns
+    -------
+    plugin : Plugin
+     initialized plugin object
+    """
     plugin_dct = configuration["plugin"]
 
     installed_modules = set(name for _, name, _ in pkgutil.iter_modules())
@@ -73,7 +102,29 @@ def load_plugin(configuration: dict[str, Any], plugin_dir: str) -> Plugin:
                       assets_path)
 
 
-def discover_plugins(path: Union[str, Traversable]):
+def discover_plugins(path: Union[str, Traversable]) -> List[Plugin]:
+    """
+    Function traverses directory structure with path as a root and loads
+    all discovered plugins
+    The plugins have to have valid configuration file to be
+
+    Parameters
+    ----------
+    path : Union[str, Traversable]
+     path to the root directory of plugins
+
+    Returns
+    -------
+    result : List[Plugin]
+     list of initialized plugins
+
+    Raises
+    -------
+    FileNotFoundError
+     raises FileNotFoundError in case plugin configuration points
+     to missing plugin module
+
+    """
     try:
         result = []
         for path, _, files in os.walk(path):
