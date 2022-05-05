@@ -3,18 +3,44 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to pygalgen's documentation!
-====================================
-
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+
+   modules
 
 
+PyGalGen
+========
 
-Indices and tables
-==================
+PyGalGen is generator for Galaxy tool definition files. 
+This documentation provides user and developer guides, along with documentation.
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+PyGalGen
+--------
+
+- Generate large parts of the wrapper file from the source code itself
+- Platform independent, doesn't require installation of the wrapped tool
+- Built in support for wrapper macros
+
+Installation
+------------
+
+Install PyGalGen by running:
+
+    pip install pygalgen
+
+Contribute
+----------
+
+- Issue Tracker: https://github.com/Kulivox/PyGalGen/issues
+- Source Code: https://github.com/Kulivox/PyGalGen
+
+Support
+-------
+
+If you are having issues, please let me know through github issues.
+
+License
+-------
+
+The project is licensed under the MIT license.
