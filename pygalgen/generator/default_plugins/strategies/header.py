@@ -1,3 +1,6 @@
+"""
+Defines header strategy of default plugin
+"""
 from typing import Any
 
 import lxml.etree as ET
@@ -8,6 +11,12 @@ from pygalgen.generator.common.macros.macros import Macros
 
 
 class HeaderStrategy(Strategy):
+    """
+    Defines default strategy for headers. Headers are things
+    like the root tool element, description, generally things that appear at
+    the top of the document, if developer follows best practices of tool
+    development
+    """
     STAGE = StrategyStage.HEADER
 
     def __init__(self, args: Any, macros: Macros):

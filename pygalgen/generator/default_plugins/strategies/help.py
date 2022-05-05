@@ -1,3 +1,6 @@
+"""
+Module contains definition of help strategy
+"""
 from lxml.etree import ElementTree
 from pygalgen.generator.common.params.argument_parser_conversion import \
     obtain_and_convert_parser
@@ -9,6 +12,10 @@ import io
 
 
 class HelpStrategy(Strategy):
+    """
+    This strategy extracts argument parser from target source code,
+    and uses it to generate help section
+    """
     STAGE = StrategyStage.HELP
 
     def __init__(self, args: Any, macros: Macros):

@@ -1,3 +1,6 @@
+"""
+Module contains definition of DefaultParams
+"""
 from typing import Any, Iterable, Set
 import lxml.etree as ET
 
@@ -10,6 +13,11 @@ import pygalgen.generator.common.xml_utils as xu
 
 
 class DefaultParams(Strategy):
+    """
+    This class defines strategy for parameter creation. It uses arguments
+    extracted
+    from ArgParser to create input sections, repeats and parameters
+    """
     STAGE = StrategyStage.PARAMS
 
     def __init__(self, args: Any, macros, reserved_names: Set[str]):

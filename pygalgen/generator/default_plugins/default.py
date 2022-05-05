@@ -23,6 +23,10 @@ class DefaultPlugin(Plugin):
         return DefaultDataSetup(args, self.assets_path)
 
     def get_strategies(self, args, macros):
+        """
+        Method initializes all strategies of
+        Default plugin with provided parameters and initialized macros
+        """
         with open(path.join(self.assets_path, "reserved_var_names.txt")) as f:
             reserved_names = set((name for name in f.readlines()))
 
@@ -33,6 +37,9 @@ class DefaultPlugin(Plugin):
                 HelpStrategy(args, macros), DefaultOutputs(args, macros)]
 
     def add_custom_params(self, params: ArgumentParser):
+        """
+        Defines custom params of Default plugin
+        """
         default_plugin = params.add_argument_group("Default plugin")
         default_plugin.add_argument("--dont-redirect-output", default=False,
                                     action="store_true",

@@ -1,14 +1,25 @@
+"""
+Module for command strategy od Default plugin
+"""
 from typing import Any
 import lxml.etree as ET
 from pygalgen.generator.pluggability.strategy import Strategy, StrategyStage
 import pygalgen.generator.common.commands.command_utils as cmd
 class CommandsStrategy(Strategy):
+    """
+    Class defining the command strategy od Default plugin
+    """
     STAGE = StrategyStage.COMMAND
 
     def __init__(self, args: Any, macros):
         super().__init__(args, macros, self.STAGE)
 
     def apply_strategy(self, xml_output: ET.ElementTree) -> ET.ElementTree:
+        """
+        The method uses tool name and already generated input parameters to
+        generate command template, using utility functions
+        from generator.common
+        """
         tool_name = f"{self.args.tool_name}\n"
         inputs_body = xml_output.getroot().findall(".//inputs/*")
         results = [tool_name]

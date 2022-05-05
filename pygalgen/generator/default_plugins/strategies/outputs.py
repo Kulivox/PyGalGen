@@ -8,6 +8,10 @@ from pygalgen.generator.pluggability.strategy import Strategy, StrategyStage
 
 
 class DefaultOutputs(Strategy):
+    """
+    This is a very basic Output strategy, that generates outputs for
+    stdout and stderr redirects
+    """
     def __init__(self, args: Any, macros: Macros):
         super().__init__(args, macros, StrategyStage.OUTPUTS)
 
