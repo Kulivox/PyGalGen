@@ -1,2 +1,3 @@
 include pygalgen/generator/default_plugins/*.yml
 include pygalgen/generator/default_plugins/assets/*.xml
+include pygalgen/generator/default_plugins/assets/*.txt
