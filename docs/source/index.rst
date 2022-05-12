@@ -9,6 +9,7 @@
    modules
    developerGuide
    userGuide
+   trtools.tutorial
 
 PyGalGen
 ========
