@@ -23,12 +23,12 @@ Recommended workflow
 
    .. code-block:: bash
 
-       pygalgen
-        --path TRTools\trtools\compareSTR\compareSTR.py
-        --tool-name compareSTR
-        --descr "CompareSTR"
-        --requirements trtools:4.1.0
-        --tool-version 4.1.0
+       pygalgen \
+        --path TRTools/trtools/compareSTR/compareSTR.py \
+        --tool-name compareSTR \
+        --descr "CompareSTR" \
+        --requirements trtools:4.1.0 \
+        --tool-version 4.1.0 \
         --verbose
 
    Usage of TRTools plugin is recommended. This plugin can generate citations and adds handy cheetah functions used in command elements to macros
