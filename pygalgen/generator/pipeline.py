@@ -5,6 +5,8 @@ and creates galaxy wrapper
 """
 import os
 from typing import Any, List
+
+from pygalgen.generator.common.exceptions import FailedStrategyException
 from pygalgen.generator.pluggability.plugin import Plugin
 from argparse import ArgumentParser
 from pygalgen.generator.common.macros.macros import MacrosFactory
@@ -110,7 +112,12 @@ class PipelineExecutor:
                                 f" {plugin.name}")
 
             for strategy in strategies:
-                xml_tree = strategy.apply_strategy(xml_tree)
+                try:
+                    xml_tree = strategy.apply_strategy(xml_tree)
+                except FailedStrategyException:
+                    logging.error(f"Fatal error occurred in"
+                                  f" {type(strategy).__name__}. exiting")
+                    return 1
 
         self._write_output([(xml_tree, parsed_args.tool_name)])
 

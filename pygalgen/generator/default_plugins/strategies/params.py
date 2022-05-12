@@ -4,6 +4,7 @@ Module contains definition of DefaultParams
 from typing import Any, Iterable, Set
 import lxml.etree as ET
 
+from pygalgen.generator.common.exceptions import FailedStrategyException
 from pygalgen.generator.common.utils import parse_argument_comma_sep_list
 from pygalgen.generator.pluggability.strategy import Strategy, StrategyStage
 from pygalgen.generator.common.params.argument_parser_conversion import \
@@ -28,6 +29,9 @@ class DefaultParams(Strategy):
         inputs = xml_output.find(".//inputs")
 
         parser = obtain_and_convert_parser(self.args.path)
+        if parser is None:
+            raise FailedStrategyException()
+
         data_inputs = dict()
         if self.args.inputs:
             data_inputs = {prm: fmt for prm, fmt in

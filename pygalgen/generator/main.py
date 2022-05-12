@@ -107,7 +107,8 @@ def main(args):
 
 
 def run():
-    main(sys.argv)
+    ret_code = main(sys.argv)
+    exit(ret_code)
 
 
 if __name__ == '__main__':
