@@ -1,48 +1,37 @@
 import argparse
 import lxml.etree as ET
-
+from typing import IO
 from pygalgen.common.utils import LINTER_MAGIC
 
 
-def magic_found(element: ET.Element) -> bool:
+def report_problems(file: IO) -> bool:
     """
-    Function reports whether current element contains magic tag
+    This function goes through the input file line by line and
+    outputs line numbers along with the text surrounding the magic tag.
+    If no such lines are found, it returns True to signify the file is
+    MAGIC-less
 
     Parameters
     ----------
-    element : current XML element
+    file: IO
+     file object representing the wrapper that is being verified
 
     Returns
-    -------
-    True if magic was found, otherwise False
+    --------
+    magicless:bool
+        a boolean which is true if no problems were found,
+         or False if lines with magic tag were found
     """
-    if LINTER_MAGIC in element.tag:
-        return True
+    magicless = True
+    line_number = 0
+    for line in file.readlines():
+        line_number += 1
+        index = line.find(LINTER_MAGIC)
+        if index != -1:
+            magicless = False
+            print(f"{line_number}: {line.strip()}")
 
-    for name, value in element.attrib.items():
-        if LINTER_MAGIC in name or LINTER_MAGIC in value:
-            return True
-    if element.text is not None:
-        return LINTER_MAGIC in element.text
-
-    return False
-
-
-def report_problems(element: ET.Element):
-    """
-    This function recursively goes through entire xml tree
-    and prints out lines of elements containing problems.
-    Problematic elements contain magic strings
-
-    Parameters
-    ----------
-    element: xml element that is currently being checked
-    """
-    if magic_found(element):
-        print(f"Problem found at line {element.sourceline}")
-
-    for child in element:
-        report_problems(child)
+    return magicless
 
 
 def run():
@@ -51,8 +40,15 @@ def run():
                         required=True)
     args = parser.parse_args()
 
-    tree = ET.parse(args.path)
-    report_problems(tree.getroot())
+    try:
+        with open(args.path, "r") as file:
+            magicless = report_problems(file)
+    except FileNotFoundError:
+        print("File not found")
+        exit(2)
+
+    if not magicless:
+        exit(1)
 
 
 if __name__ == '__main__':
