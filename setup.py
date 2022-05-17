@@ -11,7 +11,7 @@ MAINTAINER_EMAIL = "mich.klinka@gmail.com"
 DOWNLOAD_URL = 'https://github.com/Kulivox/TRToolsTDFGenerator'
 LICENSE = 'MIT'
 
-VERSION = "0.2.3"
+VERSION = "0.3.0"
 
 
 with open("README.md", "r", encoding="utf-8") as fh:
