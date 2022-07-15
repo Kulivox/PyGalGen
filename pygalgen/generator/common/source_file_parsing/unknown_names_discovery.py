@@ -97,13 +97,15 @@ def _insert_into_actions(actions: List[ast.AST], assignments: List[ast.Assign],
 def initialize_variables_in_module(module_tree: ast.Module,
                                    parser_name: str,
                                    sections: Set[str],
-                                   actions: List[ast.AST]) ->\
+                                   actions: List[ast.AST],
+                                   imported_names: Set[str]) ->\
         Tuple[List[ast.AST], Set[str]]:
     """
     Function used to initialize variables that have constant values
 
     Parameters
     ----------
+
     module_tree : ast.Module
      AST of the original source file
     parser_name : str
@@ -112,6 +114,8 @@ def initialize_variables_in_module(module_tree: ast.Module,
      set of section names
     actions : List[ast.AST]
      list of actions extracted so far
+    imported_names : Set[str]
+     list of names imported from modules
 
     Returns
     -------
@@ -123,7 +127,7 @@ def initialize_variables_in_module(module_tree: ast.Module,
     # this is a set of all known names, basically the things that are already
     # known and don't have to be added to the list of actions
     known_names = {parser_name, *sections,
-                   *builtin_names, *lib_modules}
+                   *builtin_names, *lib_modules, *imported_names}
 
     unknown_names_discovery = UnknownNamesDiscovery(actions, known_names)
     module = ast.Module(body=actions, type_ignores=[])

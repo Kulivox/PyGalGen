@@ -66,12 +66,12 @@ def obtain_and_convert_parser(path: str) -> Optional[ArgumentParser]:
         return None
 
     try:
-        actions, name, section_names = \
+        actions, name, section_names, imported_names = \
             get_parser_init_and_actions(tree)
 
         actions, unknown_names = \
             initialize_variables_in_module(tree, name,
-                                           section_names, actions)
+                                           section_names, actions, imported_names)
 
         result_module = handle_local_module_names(actions, unknown_names)
     except ArgumentParsingDiscoveryError as e:

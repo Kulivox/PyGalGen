@@ -2,7 +2,7 @@
 Main module of PyGalGen generator, responsible for defining default program
  arguments and program execution
 """
-import argparse
+from argparse import ArgumentParser
 import sys
 from typing import List
 
@@ -12,7 +12,7 @@ import logging
 import pygalgen.generator.default_plugins
 import importlib.resources as res
 
-def define_default_params() -> argparse.ArgumentParser:
+def define_default_params() -> ArgumentParser:
     """
     Function creates argument parser and initializes default arguments
 
@@ -21,7 +21,7 @@ def define_default_params() -> argparse.ArgumentParser:
     parser : ArgumentParser
      parser object initialized with default program arguments
     """
-    parser = argparse.ArgumentParser("Command parser")
+    parser = ArgumentParser("Command parser")
     default = parser.add_argument_group("Default program parameters")
 
     default.add_argument("--path",
