@@ -38,24 +38,26 @@ class ImportDiscovery(Discovery):
         if node.module is None:
             return
 
+        # look for argparse import (or any imports from stdlib) and import them
         for name in node.module.split("."):
             if name in sys.stdlib_module_names and name != \
                     ARGPARSE_MODULE_NAME:
                 self.actions.append(node)
                 return
+            # in case argparse is being imported, determine the alias of the
+            # parser, if there is any
+            if name == ARGPARSE_MODULE_NAME:
+                for item in node.names:
 
-        if ARGPARSE_MODULE_NAME not in node.module:
-            return
+                    if item.name != ARGUMENT_PARSER_CLASS_NAME:
+                        continue
 
-        for item in node.names:
-            if item.name == ARGUMENT_PARSER_CLASS_NAME:
-                alias = item.asname if item.asname is not None \
-                    else ARGUMENT_PARSER_CLASS_NAME
-                self.argument_parser_alias = alias
-                self.actions.append(node)
-                return
+                    alias = item.asname if item.asname is not None \
+                        else ARGUMENT_PARSER_CLASS_NAME
+                    self.argument_parser_alias = alias
+                    self.actions.append(node)
+                    return
 
-        # stdlib modules should be also imported during this step
 
     def report_findings(self) -> Tuple:
         if self.argparse_module_alias is None and \
