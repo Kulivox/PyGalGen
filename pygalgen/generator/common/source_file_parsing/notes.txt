@@ -1,0 +1,4 @@
+- currently the extractor works only if the parser is initialized and
+  created in a single method, without fancy options
+
+-

@@ -162,12 +162,10 @@ def update_name_map(name: str, name_map: Dict[str, str],
     name_map :
     reserved_names :
     """
+    while name.lower() in reserved_names:
+        name = name + str(uuid.uuid4())[:4]
+
     name_map[name] = name
-    # WARNING very unlikely name match will happen for the generated string,
-    # but it can happen,
-    # easily fixable by loop
-    if name.lower() in reserved_names:
-        name_map[name] = name + str(uuid.uuid4())[:4]
 
 
 def _determine_type(data_inputs: Dict[str, str], name: str, type_):

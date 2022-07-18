@@ -217,25 +217,20 @@ def get_parser_init_and_actions(source: ast.Module) -> \
     List of extracted AST nodes, the main name of the parser and a set of
     section names
     """
-    discovery_classes = [ImportDiscovery, SimpleParserDiscovery,
-                         GroupDiscovery, ArgumentCreationDiscovery]
+
     actions = []
     import_discovery = ImportDiscovery(actions)
-    import_discovery.visit(source)
     actions, argparse_module_alias, argparse_class_alias, imported_names = \
-        import_discovery.report_findings()
+        import_discovery.visit_and_report(source)
 
     parser_discovery = SimpleParserDiscovery(actions, argparse_module_alias,
                                              argparse_class_alias)
-    parser_discovery.visit(source)
-    actions, parser_name = parser_discovery.report_findings()
+    actions, parser_name = parser_discovery.visit_and_report(source)
 
     group_discovery = GroupDiscovery(actions, parser_name)
-    group_discovery.visit(source)
-    actions, groups = group_discovery.report_findings()
+    actions, groups = group_discovery.visit_and_report(source)
 
     argument_creation = ArgumentCreationDiscovery(actions, parser_name, groups)
-    argument_creation.visit(source)
-    actions = argument_creation.report_findings()
+    actions = argument_creation.visit_and_report(source)
 
     return actions, parser_name, groups, imported_names

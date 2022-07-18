@@ -11,8 +11,8 @@ import logging
 
 class UnknownNamesRemoval(ast.NodeVisitor):
     """
-    Node visitor used to load assignments and constant list comprehensions,
-    that are used to initialize argument parser
+    Removes unknown names that can't be resolved and replaces them with a
+    constant string that can be detected by linter
 
     Attributes
     ---
@@ -79,8 +79,8 @@ class UnknownNamesRemoval(ast.NodeVisitor):
 def handle_local_module_names(actions: List[ast.AST],
                               unknown_names: set[str]) -> ast.Module:
     """
-    Function used to extract assignments and list comprehensions that use
-    constant data and are used in argument parser init
+    Function used to remove assignments and list comprehensions which can't be
+    resolved
 
     Parameters
     ----------

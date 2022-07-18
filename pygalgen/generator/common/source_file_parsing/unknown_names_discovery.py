@@ -3,33 +3,29 @@ Module containing discovery classes used to find names
 (assignments to variables) that have not been extracted yet
 """
 import ast
-from .parsing_commons import Discovery
+from .parsing_commons import Discovery, CustomVisitor
 from typing import Tuple, List, Any, Set
 import sys
 import builtins
 
 
-class UnknownNamesDiscovery(Discovery):
+class UnknownNamesDiscovery(CustomVisitor):
     """
     Discovery class used to find names that have not been initialized yet but
     are necessary for correct argument parser init
     """
 
-    def __init__(self, actions: List[ast.AST], known_names: Set[str]):
-        super().__init__(actions)
+    def __init__(self, known_names: Set[str]):
         self.known_names = known_names
         self.unknown_names = set()
-
-    def visit_ClassDef(self, node: ast.ClassDef) -> Any:
-        return
 
     def visit_Name(self, node: ast.Name) -> Any:
         if node.id not in self.known_names:
             self.unknown_names.add(node.id)
 
-    def visit_For(self, node: ast.For) -> Any:
-        for item in node.body:
-            self.generic_visit(item)
+    # def visit_For(self, node: ast.For) -> Any:
+    #     for item in node.body:
+    #         self.generic_visit(item)
 
     def visit_ListComp(self, node: ast.ListComp) -> Any:
         for comprehension in node.generators:
@@ -42,7 +38,7 @@ class UnknownNamesDiscovery(Discovery):
         return self.unknown_names,
 
 
-class UnknownNameInit(ast.NodeVisitor):
+class UnknownNameInit(CustomVisitor):
     """
     Class used to initialize unknown names
     """
@@ -94,11 +90,11 @@ def _insert_into_actions(actions: List[ast.AST], assignments: List[ast.Assign],
         actions.insert(end_of_imports, *class_defs)
 
 
-def initialize_variables_in_module(module_tree: ast.Module,
+def initialize_variables_in_module(original_module: ast.Module,
                                    parser_name: str,
                                    sections: Set[str],
                                    actions: List[ast.AST],
-                                   imported_names: Set[str]) ->\
+                                   imported_names: Set[str]) -> \
         Tuple[List[ast.AST], Set[str]]:
     """
     Function used to initialize variables that have constant values
@@ -106,7 +102,7 @@ def initialize_variables_in_module(module_tree: ast.Module,
     Parameters
     ----------
 
-    module_tree : ast.Module
+    original_module : ast.Module
      AST of the original source file
     parser_name : str
      default name of the parser
@@ -129,24 +125,22 @@ def initialize_variables_in_module(module_tree: ast.Module,
     known_names = {parser_name, *sections,
                    *builtin_names, *lib_modules, *imported_names}
 
-    unknown_names_discovery = UnknownNamesDiscovery(actions, known_names)
-    module = ast.Module(body=actions, type_ignores=[])
-    unknown_names_discovery.visit(module)
+    while True:
+        unknown_names_discovery = UnknownNamesDiscovery(known_names)
+        extracted_module = ast.Module(body=actions, type_ignores=[])
+        unknown_names, = unknown_names_discovery.visit_and_report(
+            extracted_module)
 
-    unknown_names, = unknown_names_discovery.report_findings()
+        # after unknown names initialization is complete, new known_names set is
+        # created and new actions are added to the action list
+        unknown_names_loader = UnknownNameInit(unknown_names)
+        new_vars, new_classes, new_known_names = \
+            unknown_names_loader.visit_and_report(original_module)
 
-    unknown_names_loader = UnknownNameInit(unknown_names)
-    unknown_names_loader.visit(module_tree)
-    new_vars, new_classes, new_known_names = \
-        unknown_names_loader.report_findings()
+        _insert_into_actions(actions, new_vars, new_classes)
+        known_names = known_names.union(new_known_names)
 
-    # after unknown names initialization is complete, new known_names set is
-    # created and new actions are added to the action list
-    known_names = known_names.union(new_known_names)
-    _insert_into_actions(actions, new_vars, new_classes)
-    module.body = actions
+        if len(new_known_names) == 0:
+            break
 
-    unknown_names_discovery = UnknownNamesDiscovery(actions, known_names)
-    unknown_names_discovery.visit(module)
-    unknown_names, = unknown_names_discovery.report_findings()
     return actions, unknown_names
