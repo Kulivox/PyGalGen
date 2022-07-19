@@ -5,36 +5,13 @@ and discovery of the statements initializing the parser itself
 import ast
 import sys
 from typing import Tuple, Optional, Any, Set, List
+
+from .decoy_parser import obtain_class_def
 from .parsing_exceptions import ArgParseImportNotFound, ArgParserNotUsed
 from .parsing_commons import Discovery
 
 ARGPARSE_MODULE_NAME = "argparse"
 ARGUMENT_PARSER_CLASS_NAME = "ArgumentParser"
-
-
-def is_this_argparse(argument_parser_alias: str, argparse_module_alias: str,
-                     node: ast.Assign) -> \
-        Tuple[bool, Optional[str]]:
-    if not (len(node.targets) == 1 and
-            isinstance(node.targets[0], ast.Name)):
-        return False, None
-
-    name = node.targets[0].id
-
-    # ArgumentParser was imported using from ... import
-    if (isinstance(node.value, ast.Call) and
-            isinstance(node.value.func, ast.Name) and
-            node.value.func.id == argument_parser_alias):
-        return True, name
-
-    # ArgumentParser is created using attribute call on imported module
-    if (isinstance(node.value, ast.Call) and
-            isinstance(node.value.func, ast.Attribute) and
-            node.value.func.attr == ARGUMENT_PARSER_CLASS_NAME and
-            node.value.func.value.id == argparse_module_alias):
-        return True, name
-
-    return False, None
 
 
 def is_this_group_creation(node: ast.Assign):
@@ -104,31 +81,68 @@ class ImportDiscovery(Discovery):
                 self.argument_parser_alias, self.imported_names)
 
 
-class SimpleParserDiscovery(Discovery):
+class SimpleParserDiscoveryAndReplacement(Discovery):
     """
         Class responsible for discovery of ArgumentParser creation
-        and assignment
+        and assignment, and replacement of the class definition
+         by the one supplied through constructor
     """
 
     def __init__(self, actions: List[ast.AST], argparse_alias: Optional[str],
-                 argument_parser_alias: Optional[str]):
+                 argument_parser_alias: Optional[str],
+                 custom_parser_def: ast.ClassDef):
         self.argument_parser_alias = argument_parser_alias
         self.argparse_module_alias = argparse_alias
         self.main_parser_name: Optional[str] = None
         self.argparse_found = False
+        self.custom_parser_def = custom_parser_def
 
-        super(SimpleParserDiscovery, self).__init__(actions)
+        super(SimpleParserDiscoveryAndReplacement, self).__init__(actions)
+
+    @staticmethod
+    def is_simple_assignment(node: ast.Assign):
+        return len(node.targets) == 1 and isinstance(node.targets[0], ast.Name)
+
+    @staticmethod
+    def imported_using_from(node: ast.Assign, argument_parser_alias: str):
+        return (isinstance(node.value, ast.Call) and
+                isinstance(node.value.func, ast.Name) and
+                node.value.func.id == argument_parser_alias)
+
+    @staticmethod
+    def imported_using_import(node: ast.Assign, argparse_module_alias: str):
+        return (isinstance(node.value, ast.Call) and
+                isinstance(node.value.func, ast.Attribute) and
+                node.value.func.attr == ARGUMENT_PARSER_CLASS_NAME and
+                node.value.func.value.id == argparse_module_alias)
 
     def visit_Assign(self, node: ast.Assign):
         if self.argparse_found:
             return
         # visit into children of this node is not necessary
-        is_argparse, name = is_this_argparse(self.argument_parser_alias,
-                                             self.argparse_module_alias, node)
-        if is_argparse:
+        if not self.is_simple_assignment(node):
+            return
+
+        name = node.targets[0].id
+        import_from = self.imported_using_from(node,
+                                               self.argument_parser_alias)
+        import_import = self.imported_using_import(node,
+                                                   self.argparse_module_alias)
+
+        if import_import or import_from:
+            self.actions.append(self.custom_parser_def)
             self.main_parser_name = name
             self.actions.append(node)
             self.argparse_found = True
+            self._replace_parser(node, import_from)
+
+    def _replace_parser(self, node: ast.Assign, imported_using_from: bool):
+        if imported_using_from:
+            node.value.id = self.custom_parser_def.name
+            return
+
+        assert type(node.value is ast.Call)
+        node.value.func = ast.Name(self.custom_parser_def.name, ast.Load())
 
     def report_findings(self) -> Tuple:
         if self.main_parser_name is None:
@@ -181,6 +195,7 @@ class ArgumentCreationDiscovery(Discovery):
     def is_call_on_parser_or_group(self, node: ast.Call):
         return isinstance(node.func, ast.Attribute) and \
                node.func.attr == "add_argument" and \
+               hasattr(node.func.value, "id") and \
                (node.func.value.id in self.sections or
                 node.func.value.id == self.main_name)
 
@@ -219,12 +234,17 @@ def get_parser_init_and_actions(source: ast.Module) -> \
     """
 
     actions = []
+    custom_parser_class_def = obtain_class_def()
     import_discovery = ImportDiscovery(actions)
     actions, argparse_module_alias, argparse_class_alias, imported_names = \
         import_discovery.visit_and_report(source)
 
-    parser_discovery = SimpleParserDiscovery(actions, argparse_module_alias,
-                                             argparse_class_alias)
+    imported_names.add(custom_parser_class_def.name)
+
+    parser_discovery = SimpleParserDiscoveryAndReplacement(actions,
+                                                           argparse_module_alias,
+                                                           argparse_class_alias,
+                                                           custom_parser_class_def)
     actions, parser_name = parser_discovery.visit_and_report(source)
 
     group_discovery = GroupDiscovery(actions, parser_name)

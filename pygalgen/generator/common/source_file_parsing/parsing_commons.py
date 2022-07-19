@@ -27,8 +27,13 @@ def add_parents(tree: ast.AST):
             child.parent = node
 
 
-def create_module_tree(path: str) -> ast.Module:
+def create_module_tree_from_path(path: str) -> ast.Module:
     with open(path, mode="r", encoding="utf-8") as file:
         tree = ast.parse(file.read())
         add_parents(tree)
         return tree
+
+def create_module_tree_from_str(text: str) -> ast.Module:
+    tree = ast.parse(text)
+    add_parents(tree)
+    return tree

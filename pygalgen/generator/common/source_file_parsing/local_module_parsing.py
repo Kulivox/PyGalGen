@@ -69,6 +69,11 @@ class UnknownNamesRemoval(ast.NodeVisitor):
         current: ast.keyword
         current.value = not_found_const
 
+    # we dont care about class defifnitions, they should only depend
+    # on outside things
+    def visit_ClassDef(self, node: ast.ClassDef) -> Any:
+        return
+
     def visit_Name(self, node: ast.Name) -> Any:
         if node.id not in self.unknown:
             return
