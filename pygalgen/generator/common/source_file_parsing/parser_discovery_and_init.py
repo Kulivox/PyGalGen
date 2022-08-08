@@ -70,7 +70,6 @@ class ImportDiscovery(Discovery):
                     if name == ARGPARSE_MODULE_NAME and \
                             item.name == ARGUMENT_PARSER_CLASS_NAME:
                         self.argument_parser_alias = alias
-                        self.actions.append(node)
 
     def report_findings(self) -> Tuple[List[ast.AST], str, str, Set[str]]:
         if self.argparse_module_alias is None and \
@@ -138,7 +137,9 @@ class SimpleParserDiscoveryAndReplacement(Discovery):
 
     def _replace_parser(self, node: ast.Assign, imported_using_from: bool):
         if imported_using_from:
-            node.value.id = self.custom_parser_def.name
+            self.custom_parser_def.bases[0] =\
+                ast.Name(self.argument_parser_alias, ast.Load())
+            node.value.func.id = self.custom_parser_def.name
             return
 
         assert type(node.value is ast.Call)

@@ -2,7 +2,6 @@ import argparse
 import ast
 from typing import Optional
 
-
 class DecoyParser(argparse.ArgumentParser):
     """
     Decoy class that is injected into code that initializes parser
@@ -36,7 +35,7 @@ class DecoyParser(argparse.ArgumentParser):
 
     def save_action(self, scope, *args, **kwargs):
         self.tracked_actions.append(
-            self.Action(scope, args[0], kwargs.get("action",
+            self.Action(scope, args[-1], kwargs.get("action",
                                                    "STORE"), kwargs))
 
     def add_argument(self, *args, **kwargs):

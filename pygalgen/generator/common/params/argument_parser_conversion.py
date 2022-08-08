@@ -75,6 +75,7 @@ def obtain_and_convert_parser(path: str) -> Optional[ArgumentParser]:
 
     return obtain_parser(tree)
 
+
 def obtain_and_convert_parser_from_str(text: str) -> Optional[ArgumentParser]:
     """
         Function parses python source code stored in text and
@@ -92,6 +93,7 @@ def obtain_and_convert_parser_from_str(text: str) -> Optional[ArgumentParser]:
     tree = create_module_tree_from_str(text)
 
     return obtain_parser(tree)
+
 
 def obtain_parser(tree: ast.Module) -> Optional[ArgumentParser]:
     try:
@@ -113,6 +115,8 @@ def obtain_parser(tree: ast.Module) -> Optional[ArgumentParser]:
     compiled_module = compile(result_module, filename="<parser>", mode="exec")
     namespace = {}
     try:
+        print(ast.unparse(result_module))
+
         exec(compiled_module, namespace)
     except Exception as e:
         print(e)
@@ -120,6 +124,7 @@ def obtain_parser(tree: ast.Module) -> Optional[ArgumentParser]:
         logging.error("Parser couldn't be extracted")
         return None
     return namespace[name]
+
 
 def extract_useful_info_from_parser(parser: DecoyParser,
                                     data_inputs: Dict[str, str],
@@ -157,7 +162,8 @@ def extract_useful_info_from_parser(parser: DecoyParser,
     for action in parser.report_arguments_and_groups():
         name = extract_variable_name(action.argument)
         argument = action.argument
-        type_ = _determine_type(data_inputs, name, action.kwargs.get("type", str))
+        type_ = _determine_type(data_inputs, name,
+                                action.kwargs.get("type", str))
         nargs = _determine_nargs(action.kwargs.get("nargs", None))
 
         update_name_map(name, name_map, reserved_names)
@@ -182,7 +188,6 @@ def extract_useful_info_from_parser(parser: DecoyParser,
                                 default_val, custom_attributes, nargs, help_,
                                 optional, is_repeat, is_select, choices,
                                 is_flag))
-
 
     return params, {new: old for old, new in name_map.items()}
 
@@ -233,7 +238,8 @@ def _determine_nargs(nargs: Union[str, int, None]) -> Union[float, int]:
     return int(nargs)
 
 
-def _determine_custom_attributes(type_: str, nargs: int) -> List[Tuple[str, str]]:
+def _determine_custom_attributes(type_: str, nargs: int) -> List[
+    Tuple[str, str]]:
     flags: List[Tuple[str, str]] = []
 
     if type_ == "data" and nargs > 1:

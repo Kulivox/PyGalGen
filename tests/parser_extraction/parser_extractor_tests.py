@@ -1,7 +1,8 @@
 import unittest
 
 from pygalgen.generator.common.params.argument_parser_conversion import \
-    obtain_and_convert_parser_from_str, extract_useful_info_from_parser
+    obtain_and_convert_parser_from_str, extract_useful_info_from_parser, \
+    ParamInfo
 
 SINGLE_ARGUMENT = """
 from argparse import ArgumentParser
@@ -26,24 +27,30 @@ def arg_parser():
     return parser
 """
 
-GETTING_RETARDED = """
-import argparse
-
-
-class TestParser(argparse.ArgumentParser):
-    def hah(self):
-        print("woof")
-"""
-
-
 
 class SingleArgumentEachAction(unittest.TestCase):
     def test_store(self):
-        STORE = SINGLE_ARGUMENT_2.format(action="store")
+        STORE = SINGLE_ARGUMENT.format(action="store")
         parser = obtain_and_convert_parser_from_str(STORE)
-        info = extract_useful_info_from_parser(parser, dict(), set())
-        print(info)
+        info, _ = extract_useful_info_from_parser(parser, dict(), set())
 
+        self.assertEqual(info[1], ParamInfo(
+            type="text",
+            name="foo",
+            argument="--foo",
+            label="foo",
+            section="default",
+            section_label="default",
+            default_val=None,
+            custom_attributes=[],
+            nargs=0,
+            help=None,
+            optional=False,
+            is_repeat=False,
+            is_select=False,
+            choices=None,
+            is_flag=False
+        ))
 
     def test_const(self):
         pass
@@ -61,11 +68,10 @@ class SingleArgumentEachAction(unittest.TestCase):
         pass
 
 
-
 class MultipleArgumentsSimple(unittest.TestCase):
     def test_something_else(self):
         self.assertEqual(True, True)
 
+
 if __name__ == '__main__':
     unittest.main()
-
