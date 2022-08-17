@@ -6,6 +6,8 @@ from argparse import ArgumentParser
 import sys
 from typing import List
 
+from pygalgen.generator.common.source_file_parsing.decoy_parser import \
+    DecoyParser
 from pygalgen.generator.pipeline import PipelineExecutor
 from pygalgen.generator.plugin_discovery import discover_plugins
 import logging
@@ -21,7 +23,7 @@ def define_default_params() -> ArgumentParser:
     parser : ArgumentParser
      parser object initialized with default program arguments
     """
-    parser = ArgumentParser("Command parser")
+    parser = DecoyParser()
     default = parser.add_argument_group("Default program parameters")
 
     default.add_argument("--path",
@@ -39,6 +41,9 @@ def define_default_params() -> ArgumentParser:
                              help="Prints out info logs")
     logging_grp.add_argument("--debug", action="store_true", default=False,
                              help="Print out debug text")
+
+    argrp = logging_grp.add_argument_group("more specific logging")
+    argrp.add_argument("--omfggg")
 
     plugins = parser.add_argument_group("Plugin discovery")
     plugins.add_argument("--plugins-path", type=str, default="plugins",
@@ -85,6 +90,7 @@ def main(args):
     logging.basicConfig(level=logging.DEBUG)
 
     parser = define_default_params()
+    parser.report_arguments_and_groups().recurse()
     pipeline = PipelineExecutor(parser)
     logging.info("Created pipeline executor")
 

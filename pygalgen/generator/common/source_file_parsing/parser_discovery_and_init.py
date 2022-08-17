@@ -72,9 +72,13 @@ class ImportDiscovery(Discovery):
                         self.argument_parser_alias = alias
 
     def report_findings(self) -> Tuple[List[ast.AST], str, str, Set[str]]:
+        print(self.actions)
+        print(self.argparse_module_alias)
+        print(self.argument_parser_alias)
+        print(self.imported_names)
         if self.argparse_module_alias is None and \
                 self.argument_parser_alias is None:
-            raise ArgParseImportNotFound
+            raise ArgParseImportNotFound()
 
         return (self.actions, self.argparse_module_alias,
                 self.argument_parser_alias, self.imported_names)

@@ -115,8 +115,7 @@ def obtain_parser(tree: ast.Module) -> Optional[ArgumentParser]:
     compiled_module = compile(result_module, filename="<parser>", mode="exec")
     namespace = {}
     try:
-        print(ast.unparse(result_module))
-
+        # print(ast.unparse(result_module))
         exec(compiled_module, namespace)
     except Exception as e:
         print(e)
