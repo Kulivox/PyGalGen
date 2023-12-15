@@ -18,7 +18,7 @@ This tool will not receive further updates. Please use planemo instead.
 
 Usage documentation: https://planemo.readthedocs.io/en/latest/writing_standalone.html?highlight=argparse#creating-galaxy-tools-from-python-scripts-using-argparse
 
-PyGalGen
+[NOW OBSOLETE] PyGalGen
 ========
 
 PyGalGen is generator for Galaxy tool definition files. It supports custom plugins, and tool
