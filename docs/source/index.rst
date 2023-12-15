@@ -11,6 +11,11 @@
    userGuide
    trtools.tutorial
 
+!!! IMPORTANT NOTICE !!!
+========
+PyGalGen has been integrated into `Planemo <https://github.com/galaxyproject/planemo/releases/tag/0.75.11>`_
+This tool will not receive further updates. Please use planemo instead.
+
 PyGalGen
 ========
 
