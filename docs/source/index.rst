@@ -11,15 +11,22 @@
    userGuide
    trtools.tutorial
 
-!!! IMPORTANT NOTICE !!!
+
+
+
+[NOW OBSOLETE] PyGalGen
 ========
+
+!!! IMPORTANT NOTICE !!!
+--------
+
 PyGalGen has been integrated into `Planemo <https://github.com/galaxyproject/planemo/releases/tag/0.75.11>`_
 This tool will not receive further updates. Please use planemo instead.
 
 Usage documentation: https://planemo.readthedocs.io/en/latest/writing_standalone.html?highlight=argparse#creating-galaxy-tools-from-python-scripts-using-argparse
 
-[NOW OBSOLETE] PyGalGen
-========
+Description
+--------
 
 PyGalGen is generator for Galaxy tool definition files. It supports custom plugins, and tool
 developers are encouraged to create their own plugins for their specific needs.
